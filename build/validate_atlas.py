@@ -79,6 +79,13 @@ def main() -> int:
 
     for obj in by_type["evidence_span"]:
         require_ref(obj["id"], obj["source_instance_id"], "source_instance")
+        if obj.get("digest_basis") == "SOURCE_BYTES_RANGE":
+            start = obj.get("byte_start")
+            end = obj.get("byte_end_exclusive")
+            if isinstance(start, int) and isinstance(end, int) and end <= start:
+                errors.append(
+                    f"{obj['id']}: SOURCE_BYTES_RANGE requires byte_end_exclusive > byte_start"
+                )
 
     for obj in by_type["evidence_projection"]:
         require_ref(obj["id"], obj["source_instance_id"], "source_instance")
