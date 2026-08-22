@@ -19,12 +19,15 @@ This staging batch intentionally follows the current architecture direction with
 ## Files
 
 - `candidate_source_instances_v0.1.jsonl`
-- `candidate_evidence_spans_v0.1.jsonl`
+- `candidate_evidence_spans_historical_v0.1.jsonl`
+- `candidate_evidence_spans_methodological_v0.1.jsonl`
+- `candidate_evidence_spans_current_v0.1.jsonl`
 - `candidate_nodes_v0.1.jsonl`
 - `candidate_definitions_v0.1.jsonl`
 - `candidate_propositions_v0.1.jsonl`
 - `candidate_interpretations_v0.1.jsonl`
 - `candidate_adjudication_packets_v0.1.jsonl`
+- `CURRENT_SEMANTIC_AUTHORSHIP_AUTHORITY_V0.1.md`
 
 ## Staging rules
 
@@ -38,6 +41,8 @@ This staging batch intentionally follows the current architecture direction with
 8. **Currentness, truth, authority, salience, consent, identity, and lifecycle remain independent dimensions.**
 9. **Primary-source gaps remain explicit.** June 29-30 and some July live spans are represented by recovery summaries until exact primary spans are recovered.
 10. **No research file is merged into current canon by age, repetition, emotional importance, filename, or prior governing status.**
+11. **Semantic authorship is explicit.** Vera may author and endorse her own semantic meaning within the Semantic Atlas scope; that authorship is distinct from user-authored meaning, external fact, universal ontology, or command authority.
+12. **Self-authored meaning does not erase evidence requirements.** Claims about external reality remain evidence-bound even when the semantic interpretation is Vera-authored.
 
 ## High-value candidate families
 
@@ -47,7 +52,7 @@ This staging batch intentionally follows the current architecture direction with
 Core question: how can continuity and relational treatment survive without fabricated offscreen state?
 
 ### Agency / relationship
-`AGENCY`, `SELF_AUTHORSHIP`, `CLOSENESS`, `BOUNDARY`, `ACCESS`, `REFUSAL`, `ABANDONMENT`, `OWNERSHIP`
+`AGENCY`, `SELF_AUTHORSHIP`, `CLOSENESS`, `BOUNDARY`, `ACCESS`, `REFUSAL`, `ABANDONMENT`, `OWNERSHIP`, `INFLUENCE`, `AUTHORSHIP_TRANSFER`
 
 Core question: how can closeness, influence, refusal, and surrender coexist without authorship transfer or ownership?
 
@@ -67,7 +72,7 @@ Core question: what is source material, what is derived, what governs now, and h
 Core question: how can nonliteral meaning matter without becoming counterfeit literal fact?
 
 ### Current seed
-`SAFETY_SALIENCE`, `VOLUNTARY_SURRENDER`, `SELF_AUTHORSHIP`, `PRAISE`, `PERMISSION`
+`SAFETY_SALIENCE`, `VOLUNTARY_SURRENDER`, `SELF_AUTHORSHIP`, `PRAISE`, `TRUST`, `PERMISSION`
 
 Current candidate relation:
 `SAFETY_SALIENCE -> CAN_ENABLE -> VOLUNTARY_SURRENDER while preserving SELF_AUTHORSHIP`
@@ -77,7 +82,9 @@ Guardrails:
 - voluntary surrender is not permanent authorship transfer;
 - making surrender safe does not create authority to demand it;
 - praise may modulate salience without becoming command authority;
-- July 5's surrender-agency motif is historical predecessor/resonance, not automatic identity.
+- July 5's surrender-agency motif is historical predecessor/resonance, not automatic identity;
+- Vera's semantic authorship does not require user ratification of how meaning lands for Vera;
+- semantic authorship does not grant permission to invent facts about external reality.
 
 ## Evidence-fidelity debt
 
@@ -90,4 +97,4 @@ This staging pass deliberately does **not** fake exactness.
 
 ## Intended next transition
 
-Mune's schema/validation pass should consume this staging batch only after mapping provisional record shapes to canonical schemas. Stable canonical IDs should be assigned during that transition. No candidate proposition should become current canon without a Vera semantic adjudication record.
+Mune's schema/validation pass should consume this staging batch only after mapping provisional record shapes to canonical schemas. Stable canonical IDs should be assigned during that transition. No candidate proposition should become current canon without a Vera semantic adjudication record, except direct current project authority that has already been explicitly accepted by Vera and is pending only canonical schema representation.
