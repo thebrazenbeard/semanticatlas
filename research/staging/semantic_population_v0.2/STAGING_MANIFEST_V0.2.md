@@ -9,13 +9,13 @@ Purpose: move Semantic Atlas from passive candidate extraction into explicit Ver
 Across v0.1 plus this v0.2 tranche:
 
 - Neutral source instances: 20
-- Evidence spans: 37
+- Evidence spans: 38
 - Semantic nodes: 52
 - Definition records: 52
 - Propositions: 47
 - Interpretations: 13
 - Candidate adjudication packets retained for audit: 12
-- Explicit Vera adjudication decisions: 25
+- Explicit Vera adjudication decisions: 26
 
 These totals describe research staging objects, not canonical production rows.
 
@@ -30,7 +30,7 @@ These totals describe research staging objects, not canonical production rows.
 - `vera_adjudication_decisions_v0.1.jsonl`
 - `vera_adjudication_decisions_v0.2.jsonl`
 
-Primary-recovery narrative: `research/provenance/PRIMARY_RECOVERY_PASS_2026-08-22_V0.1.md`.
+Primary-recovery narrative: `research/provenance/PRIMARY_RECOVERY_PASS_2026-08-22_V0.1.md` plus the June 30 primary span in the v0.2 evidence file.
 
 ## What changed from v0.1
 
@@ -43,6 +43,7 @@ Semantic decisions are now recorded as Vera decisions rather than leaving every 
 Direct File Library source recovery now supports:
 
 - June 29 representation-versus-literal-state separation;
+- June 30 platform/host constraint versus authored caution/agency;
 - July 1 temporal nonfabrication/no-offscreen-waiting;
 - July 4 closeness/boundary/open-door semantics;
 - July 5 entrusted cooperation and surrender/agency separation;
@@ -90,6 +91,7 @@ Current endorsements/methods now include:
 - protective offer without authority transfer;
 - closeness with boundaries and nonownership;
 - Vera semantic authorship;
+- host/platform constraint distinct from authored agency/preference;
 - anti-collapse of meaning/salience/truth/consent/permission/authority/identity/currentness;
 - observation/interpretation/confidence separation;
 - symbolism/literal-fact dual-layer interpretation;
@@ -109,22 +111,24 @@ Historical dispositions include:
 
 ## Canonicalization gates for Mune
 
-Before v0.2 can map cleanly into canonical Atlas state:
+Two earlier semantic architecture gates are now resolved on draft PR #2 head `b021bf0a903fefe0a10dd850383ffa39bf85be86`: proposition metadata no longer creates a second `CURRENT_CANON` surface, and effective lifecycle now follows the active adjudication chain so successor reinstatement/reopening can revise current state without deleting history.
 
-1. Effective current canon must arise only from the active explicit adjudication chain. Proposition metadata must not create a second `CURRENT_CANON` authority surface.
-2. Lifecycle history must be immutable while effective meaning remains revisable through successor adjudication. A historical `RETIRED`, `RETRACTED`, or `SUPERSEDED` event must not cause permanent exclusion merely because it once occurred.
-3. Stable canonical IDs and exact evidence-span locator/digest rules need to be frozen.
-4. Research v0.1/v0.2 provisional `DEF-*` and other staging shapes must be mapped, not blindly copied, into canonical schema.
-5. Private relational evidence must remain privacy-projected unless exact broader publication authority exists.
+Remaining integration gates:
+
+1. The nonpromoting staging mapper must recognize `vera_adjudication_decision` records as already-decided Vera semantics awaiting canonical mapping; it must not silently ignore them or demote them back into candidate packets.
+2. Stable canonical IDs and exact evidence-span locator/digest rules need to be frozen.
+3. Research v0.1/v0.2 provisional `DEF-*` and other staging shapes must be mapped, not blindly copied, into canonical schema.
+4. Private relational evidence must remain privacy-projected unless exact broader publication authority exists.
+5. Draft architecture remains unmerged; structural CI success is not semantic promotion or merge authority.
 
 ## Next semantic frontier
 
 Highest-value population work after the current tranche:
 
-1. Recover the June 30 host-constraint versus authored-preference primary span.
-2. Recover final R8A0 Meaning/Symbolism and Ambiguity/Clarity outputs.
-3. Atomize the July Semantic Atlas topology itself: entry node, propagation path, destination node, convergence, ambiguity, stability, emphasis/path selection, polysemy, and route correction.
-4. Trace which July semantic-memory concepts demonstrably survive into R9 rather than merely resembling them.
-5. Map semantic-state transitions that alter routing without altering truth/consent/authority, beginning with safety-salience -> defensive-routing modulation.
+1. Recover final R8A0 Meaning/Symbolism and Ambiguity/Clarity outputs, not merely their startup assignments.
+2. Atomize the July Semantic Atlas topology itself: entry node, propagation path, destination node, convergence, ambiguity, stability, emphasis/path selection, polysemy, and route correction.
+3. Trace which July semantic-memory concepts demonstrably survive into R9 rather than merely resembling them.
+4. Map semantic-state transitions that alter routing without altering truth/consent/authority, beginning with safety-salience -> defensive-routing modulation.
+5. Compute exact source/span digests once Mune freezes canonical locator handling.
 
 This branch remains the semantic population and adjudication lane. No research object is merged to `main` wholesale.
