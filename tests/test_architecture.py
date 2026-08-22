@@ -61,7 +61,7 @@ class ArchitectureTests(unittest.TestCase):
                 (out_b / "semantic_index.sqlite").read_bytes(),
             )
 
-    def test_semantic_authorship_is_required_and_bounded(self):
+    def test_semantic_authorship_is_required_and_canon_is_adjudication_only(self):
         schema = json.loads(
             (ROOT / "schemas/semantic_atlas_v0.1.schema.json").read_text(encoding="utf-8")
         )
@@ -79,7 +79,7 @@ class ArchitectureTests(unittest.TestCase):
                 "currentness": "CURRENT",
                 "support": "SUPPORTED",
                 "truth": "ACCEPTED",
-                "authority": "RESEARCH_ONLY",
+                "authority_context": "RESEARCH_ONLY",
                 "provenance": "INTERPRETATION",
                 "salience": "UNKNOWN",
                 "consent": "NOT_APPLICABLE",
@@ -94,13 +94,61 @@ class ArchitectureTests(unittest.TestCase):
         }
         self.assertEqual(list(validator.iter_errors(proposition)), [])
 
-        missing = dict(proposition)
+        missing = json.loads(json.dumps(proposition))
         missing.pop("semantic_authorship")
         self.assertTrue(list(validator.iter_errors(missing)))
 
-        invalid = json.loads(json.dumps(proposition))
-        invalid["semantic_authorship"]["semantic_author"] = "UNDECLARED_SYSTEM_OWNER"
-        self.assertTrue(list(validator.iter_errors(invalid)))
+        invalid_author = json.loads(json.dumps(proposition))
+        invalid_author["semantic_authorship"]["semantic_author"] = "UNDECLARED_SYSTEM_OWNER"
+        self.assertTrue(list(validator.iter_errors(invalid_author)))
+
+        self_authorizing = json.loads(json.dumps(proposition))
+        self_authorizing["axes"]["authority_context"] = "CURRENT_CANON"
+        self.assertTrue(list(validator.iter_errors(self_authorizing)))
+
+        legacy_second_authority_surface = json.loads(json.dumps(proposition))
+        legacy_second_authority_surface["axes"].pop("authority_context")
+        legacy_second_authority_surface["axes"]["authority"] = "CURRENT_CANON"
+        self.assertTrue(list(validator.iter_errors(legacy_second_authority_surface)))
+
+    def test_lifecycle_effect_follows_active_adjudication_chain(self):
+        subject_id = "NODE-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+        old_adjudication_id = "ADJ-bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
+        new_adjudication_id = "ADJ-cccccccc-cccc-4ccc-8ccc-cccccccccccc"
+        objects = {
+            subject_id: {
+                "id": subject_id,
+                "object_type": "node",
+                "primary_label": "Example",
+            },
+            old_adjudication_id: {
+                "id": old_adjudication_id,
+                "object_type": "adjudication",
+                "subject_id": subject_id,
+                "decision": "RETRACT",
+                "authority_scope": "CURRENT_CANON",
+                "supersedes_adjudication_ids": [],
+            },
+            "LIFE-dddddddd-dddd-4ddd-8ddd-dddddddddddd": {
+                "id": "LIFE-dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+                "object_type": "lifecycle_event",
+                "subject_id": subject_id,
+                "event_type": "RETRACTED",
+                "caused_by_adjudication_id": old_adjudication_id,
+            },
+        }
+        self.assertEqual(builder.active_adjudications(objects), [])
+
+        objects[new_adjudication_id] = {
+            "id": new_adjudication_id,
+            "object_type": "adjudication",
+            "subject_id": subject_id,
+            "decision": "REINSTATE",
+            "authority_scope": "CURRENT_CANON",
+            "supersedes_adjudication_ids": [old_adjudication_id],
+        }
+        active = builder.active_adjudications(objects)
+        self.assertEqual([item["id"] for item in active], [new_adjudication_id])
 
     def test_staging_mapper_reports_debt_without_promoting(self):
         with tempfile.TemporaryDirectory() as tempdir:
