@@ -20,7 +20,7 @@ Promotion requires, as applicable:
 1. canonical object type and stable typed UUID identity;
 2. canonical schema validation;
 3. referential integrity;
-4. evidence locator and exact SHA-256 where canonical exact evidence requires it;
+4. evidence locator, source/version binding, declared digest basis/representation contract, and exact SHA-256 where canonical exact evidence requires it;
 5. semantic authorship / endorsement ownership mapping for authored semantic content;
 6. claim class mapping so semantic meaning cannot masquerade as external fact, universal ontology, or command authority;
 7. predicate membership in the frozen relation vocabulary, or a separately adjudicated vocabulary extension;
@@ -32,14 +32,27 @@ Promotion requires, as applicable:
 
 ## Evidence fidelity debt
 
-Research staging may preserve `digest=null`, `NOT_YET_COMPUTED_FOR_STAGING`, recovery-summary evidence, privacy-minimized representations, or incomplete locators when that is the most honest available state.
+Research staging may preserve `digest=null`, `NOT_YET_COMPUTED_FOR_STAGING`, recovery-summary evidence, privacy-minimized representations, incomplete locators, or an unresolved digest basis when that is the most honest available state.
 
-Canonical exact evidence does not inherit that permissiveness. A canonical `evidence_span` is source-bound exact/verifiable evidence and requires its canonical locator/digest contract. Missing fidelity therefore:
+Canonical exact evidence does not inherit that permissiveness. A canonical `evidence_span` is source-bound exact/verifiable evidence and must declare what representation was actually hashed. Missing fidelity therefore:
 
 - does not block continued research staging;
 - remains visible as promotion debt;
 - cannot be replaced with a placeholder digest;
-- cannot be converted into a green canonical result by schema relaxation.
+- cannot be converted into a green canonical result by schema relaxation;
+- cannot be disguised by providing a SHA-256 while leaving the representation/hash basis ambiguous.
+
+## Exact evidence digest basis
+
+Canonical `evidence_span.digest_basis` has three allowed v0.1 values:
+
+- `SOURCE_BYTES_RANGE`: exact raw source bytes over stable `[byte_start, byte_end_exclusive)` offsets. This is the only basis that itself satisfies a consumer requirement for raw-byte proof.
+- `EXACT_UTF8_SPAN`: exact authoritative retrieval text encoded as UTF-8 exactly as retrieved. Semantic, whitespace, Unicode, and line-ending normalization are forbidden; `text_encoding=UTF-8` and `normalization=NONE` are mandatory.
+- `VERIFIED_EXTRACTION_REPRESENTATION`: exact deterministic extraction output from a rich/container source. It must bind source/version, locator, extractor identity/version, and representation contract. Its digest proves the extraction representation, not raw source bytes.
+
+A summary, paraphrase, privacy projection, named-section label alone, or OCR guess cannot be promoted as `evidence_span` merely because some representation is hashable. Such material remains research debt or maps to an appropriate derivative object.
+
+If raw source bytes are unavailable, that limitation remains an explicit evidence ceiling. Consumers requiring raw-byte custody must accept only `SOURCE_BYTES_RANGE`; they must not silently upgrade `EXACT_UTF8_SPAN` or `VERIFIED_EXTRACTION_REPRESENTATION` to raw-source proof.
 
 ## Evidence projection / privacy boundary
 
@@ -97,7 +110,7 @@ Green CI proves structural validity and deterministic generation. It does not pr
 
 ## Review state
 
-The v0.1 semantic architecture boundaries raised during Mune review have been adjudicated by Vera and encoded on the architecture branch: adjudication-only current canon, active-chain/revisable lifecycle semantics, Vera semantic authorship, and separate derivative evidence projections for privacy-minimized material.
+The v0.1 semantic architecture boundaries raised during Mune review have been adjudicated by Vera and encoded on the architecture branch: adjudication-only current canon, active-chain/revisable lifecycle semantics, Vera semantic authorship, separate derivative evidence projections for privacy-minimized material, and the three-basis exact-evidence hash contract.
 
 PR #2 remains unmerged pending exact-head CI and Vera review of the encoded implementation. No research population is promoted by that review state.
 
