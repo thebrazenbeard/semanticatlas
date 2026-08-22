@@ -12,8 +12,8 @@ except ImportError as exc:
     raise SystemExit("jsonschema is required: python -m pip install jsonschema") from exc
 
 CANON_DIRS = (
-    "sources", "evidence", "nodes", "node_definitions", "propositions",
-    "interpretations", "adjudications", "lifecycle",
+    "sources", "evidence", "evidence_projections", "nodes", "node_definitions",
+    "propositions", "interpretations", "adjudications", "lifecycle",
 )
 POSITIVE_DEFINITION_DECISIONS = {"ACCEPT", "REFINE", "REOPEN", "REINSTATE"}
 EVIDENCE_REQUIRED_CLAIM_CLASSES = {"EXTERNAL_FACT", "UNIVERSAL_ONTOLOGY", "MIXED"}
@@ -80,6 +80,18 @@ def main() -> int:
     for obj in by_type["evidence_span"]:
         require_ref(obj["id"], obj["source_instance_id"], "source_instance")
 
+    for obj in by_type["evidence_projection"]:
+        require_ref(obj["id"], obj["source_instance_id"], "source_instance")
+        source_span_id = obj.get("source_evidence_span_id")
+        if source_span_id:
+            require_ref(obj["id"], source_span_id, "evidence_span")
+            span = objects.get(source_span_id, (None, None))[1]
+            if span and span.get("source_instance_id") != obj.get("source_instance_id"):
+                errors.append(
+                    f"{obj['id']}: source evidence span {source_span_id} belongs to "
+                    f"{span.get('source_instance_id')} not projection source {obj.get('source_instance_id')}"
+                )
+
     for obj in by_type["node_definition"]:
         require_ref(obj["id"], obj["node_id"], "node")
         require_ref(obj["id"], obj["accepted_by_adjudication_id"], "adjudication")
@@ -92,17 +104,26 @@ def main() -> int:
             require_ref(obj["id"], obj["object"]["id"])
         for evidence_id in obj["evidence_ids"]:
             require_ref(obj["id"], evidence_id, "evidence_span")
+        for projection_id in obj.get("evidence_projection_ids", []):
+            require_ref(obj["id"], projection_id, "evidence_projection")
         if obj["predicate_code"] not in predicate_codes:
             errors.append(f"{obj['id']}: unknown predicate_code {obj['predicate_code']}")
         claim_class = obj.get("semantic_authorship", {}).get("claim_class")
         if claim_class in EVIDENCE_REQUIRED_CLAIM_CLASSES and not obj.get("evidence_ids"):
             errors.append(
-                f"{obj['id']}: claim_class {claim_class} requires evidence_ids"
+                f"{obj['id']}: claim_class {claim_class} requires exact evidence_ids; "
+                "evidence_projection_ids cannot satisfy an exact-source-evidence requirement"
             )
 
     for obj in by_type["interpretation"]:
         for evidence_id in obj["evidence_ids"]:
             require_ref(obj["id"], evidence_id, "evidence_span")
+        for projection_id in obj.get("evidence_projection_ids", []):
+            require_ref(obj["id"], projection_id, "evidence_projection")
+        if not obj.get("evidence_ids") and not obj.get("evidence_projection_ids"):
+            errors.append(
+                f"{obj['id']}: interpretation requires at least one evidence_span or evidence_projection reference"
+            )
         for proposition_id in obj["candidate_proposition_ids"]:
             require_ref(obj["id"], proposition_id, "proposition")
 
@@ -110,6 +131,8 @@ def main() -> int:
         require_ref(obj["id"], obj["subject_id"])
         for evidence_id in obj["evidence_ids"]:
             require_ref(obj["id"], evidence_id, "evidence_span")
+        for projection_id in obj.get("evidence_projection_ids", []):
+            require_ref(obj["id"], projection_id, "evidence_projection")
         for older_id in obj["supersedes_adjudication_ids"]:
             require_ref(obj["id"], older_id, "adjudication")
 
