@@ -208,7 +208,9 @@ def blocker_list(record: dict, predicate_codes: set[str]) -> list[str]:
             blockers.append("ADJUDICATION_SUPERSESSION_MAPPING_REQUIRED")
 
     elif record_type == "candidate_source_instance":
-        pass
+        locator = record.get("locator")
+        if locator is not None and not isinstance(locator, str):
+            blockers.append("SOURCE_LOCATOR_MAPPING_REQUIRED")
 
     elif record_type == "candidate_node":
         pass
