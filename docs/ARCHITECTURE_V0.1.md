@@ -2,83 +2,60 @@
 
 Status: ENGINEERING CANDIDATE / VERA REVIEW REQUIRED
 
-This pass implements the structural decisions adjudicated by Vera on GitHub issue #1. It does not promote historical research conclusions to current canon.
+This pass implements structural decisions adjudicated by Vera on GitHub issue #1. It does not promote research conclusions to current canon.
 
 ## Authority model
 
-Git is the canonical ledger and history authority for Semantic Atlas objects. Generated current views, SQLite indexes, graph projections, and vector indexes are derived products. They are disposable and rebuildable.
+Git is the canonical ledger and history authority for Semantic Atlas objects. Generated current views, SQLite indexes, graph projections, and vector indexes are derived and disposable.
 
-Current semantic canon is conferred only by the active explicit `adjudication` chain. A proposition cannot self-authorize by carrying a `CURRENT_CANON` value. Proposition axes instead carry non-promoting `authority_context` such as project-authority input, historical/source authority at time, research-only context, none, or unknown.
-
-A generated `current_view` is a projection of the active adjudication chain, never an authority surface of its own.
+Current semantic canon is conferred only by the active explicit `adjudication` chain. Proposition metadata is descriptive and cannot independently create `CURRENT_CANON`. A generated `current_view` is a projection of adjudication state, never an authority surface.
 
 ## First-class objects
 
-- `source_instance`: neutral source identity and custody metadata only.
-- `evidence_span`: source-bound evidence representation with explicit locator/digest fidelity. Exact privacy/representation rules remain under Vera review before schema freeze.
+- `source_instance`: neutral source identity and custody metadata.
+- `evidence_span`: source-bound exact/verifiable evidence with explicit locator and SHA-256.
+- `evidence_projection`: derivative representation of source material, including privacy-minimized summaries, with its own representation digest and explicit fidelity/provenance limits.
 - `node`: stable concept identity while defensible semantic continuity survives.
 - `node_definition`: append-only definition revision for a node.
-- `relation_type`: predicate vocabulary. A relation type defines semantics but does not assert truth.
-- `proposition`: the truth-apt assertion that instantiates a predicate and carries evidence, temporal scope, independent semantic axes, authorship, and adjudication.
-- `interpretation`: derivative reading of evidence. It is never evidence itself.
-- `adjudication`: explicit semantic decision and the sole authority for current canon.
+- `relation_type`: predicate vocabulary; it defines semantics but does not assert truth.
+- `proposition`: truth-apt assertion carrying evidence references, temporal scope, independent semantic axes, and authorship.
+- `interpretation`: derivative reading of exact evidence and/or projections; never evidence authority by itself.
+- `adjudication`: explicit semantic decision and sole current-canon authority.
 - `lifecycle_event`: append-only supersession, refinement, retraction, retirement, correction, reopening, or reinstatement history.
 
 ## Semantic authorship and endorsement
 
 Authorship, endorsement, truth, currentness, and canon authority are separate dimensions.
 
-Canonical `node_definition`, `proposition`, and `interpretation` records carry a `semantic_authorship` object with:
+Canonical `node_definition`, `proposition`, and `interpretation` records carry `semantic_authorship` with `semantic_author`, `endorsement_owner`, and `claim_class`. `adjudication` separately records `decided_by`.
 
-- `semantic_author`: whose semantic meaning/read is being authored;
-- `endorsement_owner`: whose endorsed semantic state the record represents;
-- `claim_class`: whether the record is `SEMANTIC_MEANING`, `EXTERNAL_FACT`, `UNIVERSAL_ONTOLOGY`, `COMMAND_AUTHORITY`, `MIXED`, `UNKNOWN`, or `NOT_APPLICABLE`.
+Vera may author and endorse Vera's own first-person semantic meaning without that meaning becoming Patrick-authored meaning, empirical proof, universal ontology, command authority, or permanent truth merely because it is self-authored. External factual, universal-ontology, and mixed claims remain exact-evidence-bound.
 
-`adjudication` separately records `decided_by`.
-
-Vera may author and endorse Vera's own first-person semantic meaning without that meaning becoming Patrick-authored meaning, empirical proof, universal ontology, command authority, or permanent truth merely because it is self-authored. External factual, universal-ontology, and mixed claims remain evidence-bound.
-
-Node identity itself stays authorship-neutral. Authored semantic content belongs in definition revisions, propositions, and interpretations rather than being smuggled into the existence of a node.
+Node identity itself stays authorship-neutral.
 
 ## Node continuity
 
-A node remains stable only while semantic continuity is adjudicable and defensible. Wording, precision, or scope refinements that preserve the core referent or functional role use a new `node_definition`. Material discontinuity in extension, intension, functional role, or identity conditions requires a new node plus a lineage proposition such as `EVOLVED_FROM`, `REFINES`, or `SUPERSEDES`.
+A node remains stable only while semantic continuity is defensible. Wording, precision, or scope refinements that preserve the core referent/function use a new `node_definition`. Material discontinuity requires a new node plus an explicit lineage proposition such as `EVOLVED_FROM`, `REFINES`, or `SUPERSEDES`.
 
 Shared labels and chronology never prove continuity.
 
 ## Relation versus proposition
 
-There is one truth-bearing system: propositions.
+There is one truth-bearing semantic assertion system: propositions.
 
-`relation_type` defines the predicate vocabulary. A proposition such as `SELF_AUTHORSHIP DISTINCT_FROM COMPLIANCE` is the evidence-bearing truth-apt object. Accepted propositions may be projected to graph edges. Bare semantic graph edges are not canonical facts.
-
-Structural references such as `evidence_span -> source_instance` are technical links, not semantic propositions.
+`relation_type` defines predicate vocabulary. Accepted propositions may be projected to graph edges. Bare graph edges are not canonical facts. Structural references such as `evidence_span -> source_instance` are technical links rather than truth-apt semantic relations.
 
 ## Effective lifecycle
 
 Lifecycle and adjudication records are immutable history; effective semantic meaning is revisable.
 
-A lifecycle event affects the current projection only while the adjudication that caused it remains active. A later explicit successor adjudication may `REOPEN`, `REINSTATE`, `REFINE`, or otherwise supersede an older disposition. The old `RETRACTED`, `RETIRED`, or `SUPERSEDED` event remains visible as history but stops governing current state once its causing adjudication is superseded.
+A lifecycle event affects current projection only while its causing adjudication remains active. A later explicit successor adjudication may `REOPEN`, `REINSTATE`, `REFINE`, or otherwise supersede an older disposition while preserving the old event as history.
 
-Irreversible invalidation is reserved for structurally impossible or identity-corrupt records where a new object is required rather than resurrection of the invalid identity.
+Irreversible invalidation is reserved for structurally impossible or identity-corrupt records where a new object identity is required.
 
 ## Independent axes
 
-Do not encode semantic state into one omnibus status. Proposition axes remain independent:
-
-- currentness / temporal scope
-- evidentiary support
-- truth disposition
-- non-promoting authority context
-- provenance
-- salience
-- consent
-- identity relevance
-- lifecycle state
-- semantic authorship / endorsement ownership
-- claim class
-
-Unknown and not-applicable states are explicit.
+Do not encode semantic state into one omnibus status. Proposition axes remain independent across currentness, evidentiary support, truth disposition, non-promoting authority context, provenance, salience, consent, identity relevance, lifecycle, semantic authorship/endorsement, and claim class. Unknown and not-applicable states are explicit.
 
 ## Initial relation vocabulary
 
@@ -89,37 +66,47 @@ Only relation families Vera adjudicated as mature enough are frozen in v0.1:
 - identity/equivalence: `EQUIVALENT_TO`, `DISTINCT_FROM`, `RELATED_NOT_EQUIVALENT`
 - provenance/history: `DERIVED_FROM`, `HISTORICAL_RESONANCE_WITH`
 
-Causal or normative predicates such as `CAN_ENABLE`, `PRESERVES`, `DOES_NOT_IMPLY`, and `REQUIRES` are intentionally not frozen yet.
-
-`RELATED_TO` is research-stage only and is not part of the current-canon vocabulary.
+Causal or normative predicates such as `CAN_ENABLE`, `PRESERVES`, `DOES_NOT_IMPLY`, and `REQUIRES` remain research-stage. `RELATED_TO` is not current-canon vocabulary.
 
 ## Research staging versus canonical validation
 
-Research staging is intentionally more permissive than canonical Atlas data. Staging records may contain provisional IDs, provisional predicates, unadjudicated semantic axes, explicit evidence-digest debt, and already-decided Vera adjudications awaiting canonical representation.
+Research staging is intentionally more permissive than canonical Atlas data. Staging may contain provisional IDs/predicates, unadjudicated axes, digest debt, privacy projections, and already-decided Vera adjudications awaiting canonical representation.
 
-Candidate adjudication packets and Vera-decided adjudications are not the same semantic state. `candidate_adjudication_packet` remains a recommendation/readiness object. `vera_adjudication_decision` is an already-made Vera semantic decision whose remaining blockers are canonical subject/decision/scope/evidence/supersession bindings.
+`candidate_adjudication_packet` remains a recommendation/readiness object. `vera_adjudication_decision` is an already-made Vera semantic decision whose remaining blockers are canonical subject/decision/scope/evidence/supersession bindings.
 
-`map_research_staging.py` produces a deterministic, nonpromoting readiness report. It scans every JSONL file in the selected staging directory, so callers can point it at `semantic_population_v0.1`, `semantic_population_v0.2`, or later staging directories without filename-prefix assumptions. Unsupported future record types remain visible as blockers instead of being silently skipped.
+`map_research_staging.py` is deterministic and nonpromoting. It scans every JSONL file in the selected staging directory and never writes `atlas/` objects. Unsupported future record types remain visible as blockers.
 
-For `vera_adjudication_decision`, the mapper:
+For Vera-decided adjudications, the mapper preserves `semantic_state=DECIDED`, decision provenance, semantic decider/key/date/status, UUID payload, evidence/projection mapping candidates, and predecessor-adjudication candidates.
 
-- preserves `semantic_state=DECIDED` rather than downgrading it to candidate;
-- preserves `semantic_decider`, staging decision, semantic key, decision date/status, source file, and line provenance;
-- maps `VADJ-*` identity candidates to `ADJ-*` while preserving the UUID payload;
-- maps provisional `EV-*` evidence references toward `EVID-*`;
-- maps predecessor `VADJ-*` references toward canonical `ADJ-*` supersession targets;
-- reports only the canonical binding work still required;
-- never writes `atlas/` objects.
+For privacy-minimized staging evidence, the mapper follows Vera's adjudication and targets canonical-candidate `evidence_projection` / `EPROJ-*`, not `evidence_span` / `EVID-*`. Adjudication references to those staging records preserve the projection target instead of rebadging them as exact evidence.
 
-Research evidence may continue to carry explicit digest debt. Canonical evidence digest/locator semantics are intentionally not being faked while the privacy-projection boundary is under Vera review.
+Research digest debt remains visible. Green staging parsing does not imply semantic promotion, and canonical validation cannot be obtained by placeholder hashes.
 
-Therefore:
+## Evidence span versus evidence projection
 
-- research may continue while digest debt exists;
-- missing digest debt remains visible;
-- semantic decisions remain decisions even when canonical binding is pending;
-- green research-stage parsing does not imply semantic promotion;
-- green canonical validation cannot be obtained by replacing missing evidence digests with placeholders.
+Vera adjudicated privacy-minimized source representations as a separate derivative canonical object class.
+
+### `evidence_span`
+
+`evidence_span` retains the strong invariant: it is source-bound exact/verifiable evidence. It carries a source instance, source-relative locator, and exact span SHA-256. A paraphrase does not become primary evidence because the paraphrase itself is hashable.
+
+### `evidence_projection`
+
+`evidence_projection` is generalized beyond privacy and carries:
+
+- required `source_instance_id` provenance;
+- optional `source_evidence_span_id` when a safe exact span exists;
+- `projection_kind` such as `PRIVACY_MINIMIZED`;
+- exact stored projection `representation` and `representation_sha256`;
+- `transformation_kind`;
+- fidelity class such as `SEMANTIC_SUMMARY_NOT_QUOTATION`;
+- declared support scope;
+- `raw_source_digest_state` distinguishing `VERIFIED`, `WITHHELD_FOR_PRIVACY`, and `UNAVAILABLE_OR_NOT_CAPTURED`;
+- `raw_source_sha256` only when actually verified. Withheld/unavailable states require null rather than a fabricated digest.
+
+Propositions, interpretations, and adjudications carry exact `evidence_ids` and derivative `evidence_projection_ids` separately.
+
+A projection may support semantic reasoning only within its declared fidelity and scope. It cannot satisfy an exact-source-evidence requirement. `EXTERNAL_FACT`, `UNIVERSAL_ONTOLOGY`, and `MIXED` proposition claim classes therefore still require at least one exact `evidence_span` reference even if projection support is also present.
 
 ## Repository geometry
 
@@ -131,6 +118,7 @@ vocabulary/
 atlas/
   sources/
   evidence/
+  evidence_projections/
   nodes/
   node_definitions/
   propositions/
@@ -154,28 +142,15 @@ tests/
 .github/workflows/
 ```
 
-The research lineage and research population staging remain on `research/semantic-provenance-lineage`. This architecture pass does not merge those judgments to `main`.
+The research lineage/population remains on `research/semantic-provenance-lineage`; architecture work does not merge those judgments to `main`.
 
 ## Stable IDs
 
-Canonical object IDs use an opaque type prefix plus UUID: `SRCI`, `EVID`, `NODE`, `NDEF`, `RTYPE`, `PROP`, `INTP`, `ADJ`, and `LIFE`. Human-readable labels and predicate codes are mutable/display fields, not identity.
+Canonical IDs use opaque type prefixes plus UUID: `SRCI`, `EVID`, `EPROJ`, `NODE`, `NDEF`, `RTYPE`, `PROP`, `INTP`, `ADJ`, and `LIFE`. Human-readable labels and predicate codes are mutable/display fields rather than identity.
 
-For staging records that already carry a valid UUID payload, canonicalization preserves that payload exactly and changes only the provisional type prefix where needed. Examples include `SINST-* -> SRCI-*`, `EV-* -> EVID-*`, `DEF-* -> NDEF-*`, `INT-* -> INTP-*`, and `VADJ-* -> ADJ-*`. A malformed ID or canonical-ID collision is a blocker; the mapper never silently invents a replacement identity.
+For valid staging UUID payloads, canonicalization preserves the payload and changes only the provisional type prefix. Privacy-minimized staging `EV-*` records are the deliberate exception to the old blanket `EV -> EVID` assumption: their payload is preserved but their canonical candidate prefix is `EPROJ` because the target object class is derivative.
 
-The source-ledger split tool deterministically maps legacy research `source_id` values to canonical `SRCI-*` UUIDv5 identities using a fixed migration namespace. The original identifier is preserved as `legacy_source_id`.
-
-This is only an identity proposal until records actually pass promotion review. Once a canonical identity is accepted, materially different evidence/concept identity is represented by a new object plus lineage rather than silently recycling an old ID.
-
-## Evidence locator/digest freeze boundary
-
-V0.2 research contains at least two evidence-representation families:
-
-1. source-relative primary evidence located by embedded timestamp or named section within a registered source;
-2. privacy-minimized current-message evidence whose repository `excerpt` is deliberately a semantic projection rather than verbatim source wording.
-
-The current draft schema's single opaque `locator` string plus `span_sha256` is not considered frozen for these cases. Mune has returned one semantic/privacy boundary to Vera: whether `PRIVACY_PROJECTION` may remain a canonical `evidence_span` representation with explicit source-span digest withholding, or must be represented by a separate derivative object class.
-
-Until that decision lands, no staging digest placeholder or privacy projection is promoted as an exact source span.
+Malformed IDs, record-type/prefix mismatches, duplicate staging IDs, and canonical-ID collisions fail closed. The mapper never invents replacement identities.
 
 ## Derived products
 
