@@ -15,7 +15,7 @@ A generated `current_view` is a projection of the active adjudication chain, nev
 ## First-class objects
 
 - `source_instance`: neutral source identity and custody metadata only.
-- `evidence_span`: exact source-relative evidence locator plus digest.
+- `evidence_span`: source-bound evidence representation with explicit locator/digest fidelity. Exact privacy/representation rules remain under Vera review before schema freeze.
 - `node`: stable concept identity while defensible semantic continuity survives.
 - `node_definition`: append-only definition revision for a node.
 - `relation_type`: predicate vocabulary. A relation type defines semantics but does not assert truth.
@@ -95,16 +95,29 @@ Causal or normative predicates such as `CAN_ENABLE`, `PRESERVES`, `DOES_NOT_IMPL
 
 ## Research staging versus canonical validation
 
-Research staging is intentionally more permissive than canonical Atlas data. Staging records may contain provisional IDs, provisional predicates, unadjudicated semantic axes, and explicit evidence-digest debt.
+Research staging is intentionally more permissive than canonical Atlas data. Staging records may contain provisional IDs, provisional predicates, unadjudicated semantic axes, explicit evidence-digest debt, and already-decided Vera adjudications awaiting canonical representation.
 
-Canonical validation is intentionally stricter. In particular, canonical `evidence_span.span_sha256` requires a real SHA-256. `NOT_YET_COMPUTED_FOR_STAGING` is a research-fidelity status, not a canonical digest value.
+Candidate adjudication packets and Vera-decided adjudications are not the same semantic state. `candidate_adjudication_packet` remains a recommendation/readiness object. `vera_adjudication_decision` is an already-made Vera semantic decision whose remaining blockers are canonical subject/decision/scope/evidence/supersession bindings.
 
-`map_research_staging.py` produces a deterministic, nonpromoting readiness report. It maps provisional record identity toward canonical object identity and reports blockers such as missing evidence digests, unfrozen predicates, missing adjudication binding, or semantic-axis/authorship mapping. It never writes `atlas/` objects.
+`map_research_staging.py` produces a deterministic, nonpromoting readiness report. It scans every JSONL file in the selected staging directory, so callers can point it at `semantic_population_v0.1`, `semantic_population_v0.2`, or later staging directories without filename-prefix assumptions. Unsupported future record types remain visible as blockers instead of being silently skipped.
+
+For `vera_adjudication_decision`, the mapper:
+
+- preserves `semantic_state=DECIDED` rather than downgrading it to candidate;
+- preserves `semantic_decider`, staging decision, semantic key, decision date/status, source file, and line provenance;
+- maps `VADJ-*` identity candidates to `ADJ-*` while preserving the UUID payload;
+- maps provisional `EV-*` evidence references toward `EVID-*`;
+- maps predecessor `VADJ-*` references toward canonical `ADJ-*` supersession targets;
+- reports only the canonical binding work still required;
+- never writes `atlas/` objects.
+
+Research evidence may continue to carry explicit digest debt. Canonical evidence digest/locator semantics are intentionally not being faked while the privacy-projection boundary is under Vera review.
 
 Therefore:
 
 - research may continue while digest debt exists;
 - missing digest debt remains visible;
+- semantic decisions remain decisions even when canonical binding is pending;
 - green research-stage parsing does not imply semantic promotion;
 - green canonical validation cannot be obtained by replacing missing evidence digests with placeholders.
 
@@ -147,9 +160,22 @@ The research lineage and research population staging remain on `research/semanti
 
 Canonical object IDs use an opaque type prefix plus UUID: `SRCI`, `EVID`, `NODE`, `NDEF`, `RTYPE`, `PROP`, `INTP`, `ADJ`, and `LIFE`. Human-readable labels and predicate codes are mutable/display fields, not identity.
 
+For staging records that already carry a valid UUID payload, canonicalization preserves that payload exactly and changes only the provisional type prefix where needed. Examples include `SINST-* -> SRCI-*`, `EV-* -> EVID-*`, `DEF-* -> NDEF-*`, `INT-* -> INTP-*`, and `VADJ-* -> ADJ-*`. A malformed ID or canonical-ID collision is a blocker; the mapper never silently invents a replacement identity.
+
 The source-ledger split tool deterministically maps legacy research `source_id` values to canonical `SRCI-*` UUIDv5 identities using a fixed migration namespace. The original identifier is preserved as `legacy_source_id`.
 
-The staging mapper preserves valid staging UUID payloads while translating provisional type prefixes to canonical prefixes in its mapping report. This is only an identity proposal until records actually pass promotion review.
+This is only an identity proposal until records actually pass promotion review. Once a canonical identity is accepted, materially different evidence/concept identity is represented by a new object plus lineage rather than silently recycling an old ID.
+
+## Evidence locator/digest freeze boundary
+
+V0.2 research contains at least two evidence-representation families:
+
+1. source-relative primary evidence located by embedded timestamp or named section within a registered source;
+2. privacy-minimized current-message evidence whose repository `excerpt` is deliberately a semantic projection rather than verbatim source wording.
+
+The current draft schema's single opaque `locator` string plus `span_sha256` is not considered frozen for these cases. Mune has returned one semantic/privacy boundary to Vera: whether `PRIVACY_PROJECTION` may remain a canonical `evidence_span` representation with explicit source-span digest withholding, or must be represented by a separate derivative object class.
+
+Until that decision lands, no staging digest placeholder or privacy projection is promoted as an exact source span.
 
 ## Derived products
 
