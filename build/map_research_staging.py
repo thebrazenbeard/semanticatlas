@@ -60,8 +60,26 @@ def _uuid_payload(value: str) -> str:
     return payload
 
 
-def canonical_id(record_type: str, staging_id: str) -> str:
-    target = TYPE_MAP.get(record_type)
+def is_privacy_projection(record: dict) -> bool:
+    if record.get("record_type") != "candidate_evidence_span":
+        return False
+    fields = (
+        record.get("projection_kind"),
+        record.get("evidence_class"),
+        record.get("fidelity"),
+        record.get("digest_status"),
+    )
+    return any("PRIVACY_MINIMIZED" in str(value).upper() for value in fields if value is not None)
+
+
+def target_for_record(record: dict):
+    if is_privacy_projection(record):
+        return ("evidence_projection", "EPROJ")
+    return TYPE_MAP.get(record.get("record_type"))
+
+
+def canonical_id(record_type: str, staging_id: str, target=None) -> str:
+    target = target or TYPE_MAP.get(record_type)
     expected_prefix = STAGING_PREFIX_MAP.get(record_type)
     if not target or not expected_prefix:
         raise ValueError(f"unsupported staging record_type {record_type!r}")
@@ -76,7 +94,9 @@ def canonical_id(record_type: str, staging_id: str) -> str:
     return f"{target[1]}-{_uuid_payload(staging_id)}"
 
 
-def canonical_reference(staging_id: str) -> str:
+def canonical_reference(staging_id: str, staged_id_map: dict[str, str] | None = None) -> str:
+    if staged_id_map and staging_id in staged_id_map:
+        return staged_id_map[staging_id]
     if not isinstance(staging_id, str) or "-" not in staging_id:
         raise ValueError(f"invalid staging reference {staging_id!r}")
     prefix = staging_id.split("-", 1)[0]
@@ -101,7 +121,20 @@ def blocker_list(record: dict, predicate_codes: set[str]) -> list[str]:
     record_type = record.get("record_type")
     blockers: list[str] = []
 
-    if record_type == "candidate_evidence_span":
+    if record_type == "candidate_evidence_span" and is_privacy_projection(record):
+        blockers.extend([
+            "PROJECTION_REPRESENTATION_DIGEST_REQUIRED",
+            "PROJECTION_TRANSFORMATION_MAPPING_REQUIRED",
+            "PROJECTION_FIDELITY_MAPPING_REQUIRED",
+            "PROJECTION_SCOPE_MAPPING_REQUIRED",
+            "PROJECTION_RAW_SOURCE_DIGEST_STATE_MAPPING_REQUIRED",
+        ])
+        if not record.get("source_instance_id"):
+            blockers.append("PROJECTION_SOURCE_BINDING_REQUIRED")
+        if not record.get("locator"):
+            blockers.append("PROJECTION_SOURCE_PROVENANCE_MAPPING_REQUIRED")
+
+    elif record_type == "candidate_evidence_span":
         digest = record.get("digest")
         if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
             blockers.append("EVIDENCE_DIGEST_MISSING")
@@ -162,12 +195,9 @@ def blocker_list(record: dict, predicate_codes: set[str]) -> list[str]:
             blockers.append("ADJUDICATION_SUPERSESSION_MAPPING_REQUIRED")
 
     elif record_type == "candidate_source_instance":
-        # Canonical source registration remains neutral and may carry null locator/hash.
-        # Staging-only authority/evidentiary sentinel fields are not copied.
         pass
 
     elif record_type == "candidate_node":
-        # Node identity is structurally mappable; semantic definition is separate.
         pass
 
     else:
@@ -176,15 +206,20 @@ def blocker_list(record: dict, predicate_codes: set[str]) -> list[str]:
     return sorted(set(blockers))
 
 
-def decided_adjudication_mapping(record: dict) -> dict | None:
+def decided_adjudication_mapping(record: dict, staged_id_map: dict[str, str]) -> dict | None:
     if record.get("record_type") != "vera_adjudication_decision":
         return None
 
     evidence_candidates = []
+    projection_candidates = []
     evidence_mapping_errors = []
     for evidence_id in record.get("evidence_ids", []):
         try:
-            evidence_candidates.append(canonical_reference(evidence_id))
+            mapped = canonical_reference(evidence_id, staged_id_map)
+            if mapped.startswith("EPROJ-"):
+                projection_candidates.append(mapped)
+            else:
+                evidence_candidates.append(mapped)
         except ValueError as exc:
             evidence_mapping_errors.append(str(exc))
 
@@ -193,7 +228,7 @@ def decided_adjudication_mapping(record: dict) -> dict | None:
     predecessor_mapping_error = None
     if predecessor:
         try:
-            predecessor_candidate = canonical_reference(predecessor)
+            predecessor_candidate = canonical_reference(predecessor, staged_id_map)
         except ValueError as exc:
             predecessor_mapping_error = str(exc)
 
@@ -209,6 +244,7 @@ def decided_adjudication_mapping(record: dict) -> dict | None:
             "VERA" if record.get("semantic_decider") == "VERA" else None
         ),
         "canonical_evidence_id_candidates": evidence_candidates,
+        "canonical_evidence_projection_id_candidates": projection_candidates,
         "evidence_mapping_errors": evidence_mapping_errors,
         "predecessor_decision_id": predecessor,
         "canonical_predecessor_adjudication_id_candidate": predecessor_candidate,
@@ -219,50 +255,72 @@ def decided_adjudication_mapping(record: dict) -> dict | None:
 def build_report(staging: Path, vocabulary: Path) -> dict:
     vocab = json.loads(vocabulary.read_text(encoding="utf-8"))
     predicate_codes = {item["code"] for item in vocab.get("relation_types", [])}
+    records = list(iter_jsonl(staging))
+
+    prepared = []
+    staging_id_counts: Counter[str] = Counter()
+    mapped_id_counts: Counter[str] = Counter()
+    staged_id_map: dict[str, str] = {}
+
+    for path, line_number, record in records:
+        record_type = record.get("record_type")
+        target = target_for_record(record)
+        mapping_error = None
+        mapped_id = None
+        if target:
+            try:
+                mapped_id = canonical_id(record_type, record.get("id"), target=target)
+            except ValueError as exc:
+                mapping_error = str(exc)
+        staging_id = record.get("id")
+        if isinstance(staging_id, str):
+            staging_id_counts[staging_id] += 1
+        if mapped_id:
+            mapped_id_counts[mapped_id] += 1
+            if staging_id_counts[staging_id] == 1:
+                staged_id_map[staging_id] = mapped_id
+        prepared.append((path, line_number, record, target, mapped_id, mapping_error))
 
     entries = []
     blocker_counts: Counter[str] = Counter()
     type_counts: Counter[str] = Counter()
+    target_type_counts: Counter[str] = Counter()
     semantic_state_counts: Counter[str] = Counter()
-    seen_canonical_ids = set()
 
-    for path, line_number, record in iter_jsonl(staging):
+    for path, line_number, record, target, mapped_id, mapping_error in prepared:
         record_type = record.get("record_type")
-        target = TYPE_MAP.get(record_type)
-        mapping_error = None
-        if target:
-            try:
-                mapped_id = canonical_id(record_type, record.get("id"))
-            except ValueError as exc:
-                mapped_id = None
-                mapping_error = str(exc)
-        else:
-            mapped_id = None
-
         blockers = blocker_list(record, predicate_codes)
         if mapping_error:
             blockers = sorted(set(blockers + ["CANONICAL_ID_MAPPING_FAILED"]))
+        staging_id = record.get("id")
+        if isinstance(staging_id, str) and staging_id_counts[staging_id] > 1:
+            blockers = sorted(set(blockers + ["DUPLICATE_STAGING_ID"]))
+        if mapped_id and mapped_id_counts[mapped_id] > 1:
+            blockers = sorted(set(blockers + ["CANONICAL_ID_COLLISION"]))
 
-        if mapped_id:
-            if mapped_id in seen_canonical_ids:
-                blockers = sorted(set(blockers + ["CANONICAL_ID_COLLISION"]))
-            seen_canonical_ids.add(mapped_id)
-
-        decided_mapping = decided_adjudication_mapping(record)
+        decided_mapping = decided_adjudication_mapping(record, staged_id_map)
+        if decided_mapping and decided_mapping["canonical_evidence_projection_id_candidates"]:
+            blockers = sorted(set(blockers + ["ADJUDICATION_PROJECTION_BINDING_REQUIRED"]))
         semantic_state = decided_mapping["semantic_state"] if decided_mapping else "CANDIDATE_OR_NEUTRAL"
         semantic_state_counts[semantic_state] += 1
         type_counts[record_type or "<missing>"] += 1
+        target_type_counts[target[0] if target else "<unsupported>"] += 1
         for blocker in blockers:
             blocker_counts[blocker] += 1
+
+        target_reason = None
+        if is_privacy_projection(record):
+            target_reason = "VERA_ADJUDICATED_PRIVACY_MINIMIZED_DERIVATIVE"
 
         entry = {
             "source_file": path.name,
             "line": line_number,
-            "staging_id": record.get("id"),
+            "staging_id": staging_id,
             "record_type": record_type,
             "semantic_state": semantic_state,
             "canonical_object_type": target[0] if target else None,
             "canonical_id": mapped_id,
+            "canonical_target_reason": target_reason,
             "canonical_id_mapping_error": mapping_error,
             "promotion_ready": not blockers,
             "blockers": blockers,
@@ -272,14 +330,13 @@ def build_report(staging: Path, vocabulary: Path) -> dict:
         entries.append(entry)
 
     return {
-        "report_version": "0.2",
+        "report_version": "0.3",
         "mode": "NONPROMOTING_STAGING_READINESS",
         "canonical_write_effect": "NONE",
-        # Never serialize the caller's absolute filesystem path. The directory label is
-        # useful context and remains byte-stable across different machine roots.
         "selected_staging_directory_name": staging.name,
         "staging_record_count": len(entries),
         "record_type_counts": dict(sorted(type_counts.items())),
+        "canonical_object_type_counts": dict(sorted(target_type_counts.items())),
         "semantic_state_counts": dict(sorted(semantic_state_counts.items())),
         "blocker_counts": dict(sorted(blocker_counts.items())),
         "entries": entries,
@@ -308,6 +365,7 @@ def main() -> int:
         "report_version": report["report_version"],
         "staging_record_count": report["staging_record_count"],
         "record_type_counts": report["record_type_counts"],
+        "canonical_object_type_counts": report["canonical_object_type_counts"],
         "semantic_state_counts": report["semantic_state_counts"],
         "blocker_counts": report["blocker_counts"],
         "canonical_write_effect": "NONE",
