@@ -80,11 +80,12 @@
     },
     "node_definition": {
       "type": "object", "additionalProperties": false,
-      "required": ["schema_version", "object_type", "id", "node_id", "definition", "scope", "accepted_by_adjudication_id", "predecessor_definition_id"],
+      "required": ["schema_version", "object_type", "id", "node_id", "definition", "scope", "accepted_by_adjudication_id", "predecessor_definition_id", "semantic_authorship"],
       "properties": {
         "schema_version": {"const": "0.1"}, "object_type": {"const": "node_definition"}, "id": {"type": "string", "pattern": "^NDEF-"},
         "node_id": {"type": "string", "pattern": "^NODE-"}, "definition": {"type": "string", "minLength": 1}, "scope": {"type": "string", "minLength": 1},
-        "accepted_by_adjudication_id": {"type": "string", "pattern": "^ADJ-"}, "predecessor_definition_id": {"type": ["string", "null"]}
+        "accepted_by_adjudication_id": {"type": "string", "pattern": "^ADJ-"}, "predecessor_definition_id": {"type": ["string", "null"]},
+        "semantic_authorship": {"$ref": "#/$defs/semantic_authorship"}
       }
     },
     "relation_type": {
