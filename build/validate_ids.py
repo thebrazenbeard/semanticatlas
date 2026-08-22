@@ -18,7 +18,7 @@ TYPE_PREFIX = {
     "lifecycle_event": "LIFE",
 }
 UUID_RE = re.compile(
-    r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    r"^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
 )
 CANON_DIRS = (
     "sources", "evidence", "nodes", "node_definitions", "propositions",
