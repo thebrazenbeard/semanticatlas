@@ -107,9 +107,6 @@ def canonical_reference(staging_id: str, staged_id_map: dict[str, str] | None = 
 
 
 def iter_jsonl(staging: Path):
-    # Intentionally scan every JSONL file in the selected staging directory. Decided
-    # Vera adjudications are not named candidate_*.jsonl and must not be silently
-    # excluded. Unsupported future record types remain visible as explicit blockers.
     for path in sorted(staging.glob("*.jsonl")):
         for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
             if not line.strip():
@@ -140,6 +137,25 @@ def blocker_list(record: dict, predicate_codes: set[str]) -> list[str]:
             blockers.append("EVIDENCE_DIGEST_MISSING")
         if not record.get("locator"):
             blockers.append("EVIDENCE_LOCATOR_MISSING")
+        if not record.get("digest_basis"):
+            blockers.append("EVIDENCE_DIGEST_BASIS_MAPPING_REQUIRED")
+        if not record.get("source_version_ref"):
+            blockers.append("EVIDENCE_SOURCE_VERSION_BINDING_REQUIRED")
+        if not record.get("representation_contract"):
+            blockers.append("EVIDENCE_REPRESENTATION_CONTRACT_MAPPING_REQUIRED")
+
+        basis = record.get("digest_basis")
+        if basis == "SOURCE_BYTES_RANGE":
+            if not isinstance(record.get("byte_start"), int) or not isinstance(record.get("byte_end_exclusive"), int):
+                blockers.append("EVIDENCE_BYTE_RANGE_MAPPING_REQUIRED")
+        elif basis == "EXACT_UTF8_SPAN":
+            if record.get("text_encoding") != "UTF-8" or record.get("normalization") != "NONE":
+                blockers.append("EVIDENCE_UTF8_EXACTNESS_MAPPING_REQUIRED")
+        elif basis == "VERIFIED_EXTRACTION_REPRESENTATION":
+            if not record.get("extractor_identity") or not record.get("extractor_version"):
+                blockers.append("EVIDENCE_EXTRACTOR_PROVENANCE_REQUIRED")
+        elif basis is not None:
+            blockers.append("EVIDENCE_DIGEST_BASIS_INVALID")
 
     elif record_type == "candidate_definition":
         blockers.extend([
@@ -177,9 +193,6 @@ def blocker_list(record: dict, predicate_codes: set[str]) -> list[str]:
             blockers.append("ADJUDICATION_DECIDER_MISSING")
 
     elif record_type == "vera_adjudication_decision":
-        # Semantic disposition is already Vera-decided. These blockers describe only
-        # canonical representation/binding work; they MUST NOT downgrade the semantic
-        # decision back to candidate status.
         blockers.extend([
             "ADJUDICATION_SUBJECT_MAPPING_REQUIRED",
             "ADJUDICATION_DECISION_ENUM_MAPPING_REQUIRED",
