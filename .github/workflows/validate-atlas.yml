@@ -27,6 +27,9 @@ jobs:
       - name: Validate canonical objects
         run: python build/validate_atlas.py --root .
 
+      - name: Validate typed UUID identities
+        run: python build/validate_ids.py --root .
+
       - name: Run architecture regressions
         run: python -m unittest discover -s tests -v
 
