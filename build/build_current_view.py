@@ -8,8 +8,8 @@ import sqlite3
 from pathlib import Path
 
 CANON_DIRS = (
-    "sources", "evidence", "nodes", "node_definitions", "propositions",
-    "interpretations", "adjudications", "lifecycle",
+    "sources", "evidence", "evidence_projections", "nodes", "node_definitions",
+    "propositions", "interpretations", "adjudications", "lifecycle",
 )
 
 POSITIVE_CURRENT_DECISIONS = {"ACCEPT", "REFINE", "REOPEN", "REINSTATE"}
