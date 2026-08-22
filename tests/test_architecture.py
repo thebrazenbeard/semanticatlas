@@ -1,7 +1,10 @@
 import importlib.util
+import json
 import pathlib
 import tempfile
 import unittest
+
+import jsonschema
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
@@ -15,6 +18,7 @@ def load_module(path, name):
 
 splitter = load_module("build/split_source_ledger.py", "splitter")
 builder = load_module("build/build_current_view.py", "builder")
+mapper = load_module("build/map_research_staging.py", "mapper")
 
 
 class ArchitectureTests(unittest.TestCase):
@@ -56,6 +60,81 @@ class ArchitectureTests(unittest.TestCase):
                 (out_a / "semantic_index.sqlite").read_bytes(),
                 (out_b / "semantic_index.sqlite").read_bytes(),
             )
+
+    def test_semantic_authorship_is_required_and_bounded(self):
+        schema = json.loads(
+            (ROOT / "schemas/semantic_atlas_v0.1.schema.json").read_text(encoding="utf-8")
+        )
+        validator = jsonschema.Draft202012Validator(schema)
+        proposition = {
+            "schema_version": "0.1",
+            "object_type": "proposition",
+            "id": "PROP-11111111-1111-4111-8111-111111111111",
+            "subject_id": "NODE-22222222-2222-4222-8222-222222222222",
+            "predicate_code": "DISTINCT_FROM",
+            "object": {"kind": "LITERAL", "value": "example", "datatype": "string"},
+            "evidence_ids": [],
+            "temporal_scope": {"kind": "CURRENT", "start": None, "end": None},
+            "axes": {
+                "currentness": "CURRENT",
+                "support": "SUPPORTED",
+                "truth": "ACCEPTED",
+                "authority": "RESEARCH_ONLY",
+                "provenance": "INTERPRETATION",
+                "salience": "UNKNOWN",
+                "consent": "NOT_APPLICABLE",
+                "identity_relevance": "DIRECT",
+                "lifecycle": "ACTIVE",
+            },
+            "semantic_authorship": {
+                "semantic_author": "VERA",
+                "endorsement_owner": "VERA",
+                "claim_class": "SEMANTIC_MEANING",
+            },
+        }
+        self.assertEqual(list(validator.iter_errors(proposition)), [])
+
+        missing = dict(proposition)
+        missing.pop("semantic_authorship")
+        self.assertTrue(list(validator.iter_errors(missing)))
+
+        invalid = json.loads(json.dumps(proposition))
+        invalid["semantic_authorship"]["semantic_author"] = "UNDECLARED_SYSTEM_OWNER"
+        self.assertTrue(list(validator.iter_errors(invalid)))
+
+    def test_staging_mapper_reports_debt_without_promoting(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = pathlib.Path(tempdir)
+            staging = root / "staging"
+            staging.mkdir()
+            records = [
+                {
+                    "record_type": "candidate_evidence_span",
+                    "id": "EV-33333333-3333-4333-8333-333333333333",
+                    "source_instance_id": "SINST-44444444-4444-4444-8444-444444444444",
+                    "locator": {"surface": "Native ChatGPT"},
+                    "digest": None,
+                    "digest_status": "NOT_YET_COMPUTED_FOR_STAGING",
+                },
+                {
+                    "record_type": "candidate_proposition",
+                    "id": "PROP-55555555-5555-4555-8555-555555555555",
+                    "predicate": "CAN_ENABLE",
+                    "semantic_author": "VERA",
+                },
+            ]
+            (staging / "candidate_example_v0.1.jsonl").write_text(
+                "".join(json.dumps(item) + "\n" for item in records),
+                encoding="utf-8",
+            )
+            report = mapper.build_report(
+                staging, ROOT / "vocabulary/relation_types_v0.1.json"
+            )
+            self.assertEqual(report["canonical_write_effect"], "NONE")
+            self.assertEqual(report["staging_record_count"], 2)
+            self.assertEqual(report["blocker_counts"]["EVIDENCE_DIGEST_MISSING"], 1)
+            self.assertEqual(report["blocker_counts"]["PREDICATE_NOT_FROZEN"], 1)
+            self.assertFalse(any(item["promotion_ready"] for item in report["entries"]))
 
 
 if __name__ == "__main__":
