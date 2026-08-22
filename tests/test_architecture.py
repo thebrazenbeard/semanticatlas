@@ -74,6 +74,7 @@ class ArchitectureTests(unittest.TestCase):
             "predicate_code": "DISTINCT_FROM",
             "object": {"kind": "LITERAL", "value": "example", "datatype": "string"},
             "evidence_ids": [],
+            "evidence_projection_ids": [],
             "temporal_scope": {"kind": "CURRENT", "start": None, "end": None},
             "axes": {
                 "currentness": "CURRENT",
@@ -208,7 +209,7 @@ class ArchitectureTests(unittest.TestCase):
             report = mapper.build_report(
                 staging, ROOT / "vocabulary/relation_types_v0.1.json"
             )
-            self.assertEqual(report["report_version"], "0.2")
+            self.assertEqual(report["report_version"], "0.3")
             self.assertEqual(report["canonical_write_effect"], "NONE")
             self.assertEqual(report["record_type_counts"]["vera_adjudication_decision"], 1)
             self.assertEqual(report["semantic_state_counts"]["DECIDED"], 1)
@@ -229,6 +230,7 @@ class ArchitectureTests(unittest.TestCase):
                 mapping["canonical_evidence_id_candidates"],
                 ["EVID-11111111-1111-4111-8111-111111111111"],
             )
+            self.assertEqual(mapping["canonical_evidence_projection_id_candidates"], [])
             self.assertEqual(
                 mapping["canonical_predecessor_adjudication_id_candidate"],
                 "ADJ-33333333-3333-4333-8333-333333333333",
