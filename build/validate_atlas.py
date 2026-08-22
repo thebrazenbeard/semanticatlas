@@ -15,6 +15,8 @@ CANON_DIRS = (
     "sources", "evidence", "nodes", "node_definitions", "propositions",
     "interpretations", "adjudications", "lifecycle",
 )
+POSITIVE_DEFINITION_DECISIONS = {"ACCEPT", "REFINE", "REOPEN", "REINSTATE"}
+EVIDENCE_REQUIRED_CLAIM_CLASSES = {"EXTERNAL_FACT", "UNIVERSAL_ONTOLOGY", "MIXED"}
 
 
 def iter_objects(root: Path):
@@ -92,6 +94,11 @@ def main() -> int:
             require_ref(obj["id"], evidence_id, "evidence_span")
         if obj["predicate_code"] not in predicate_codes:
             errors.append(f"{obj['id']}: unknown predicate_code {obj['predicate_code']}")
+        claim_class = obj.get("semantic_authorship", {}).get("claim_class")
+        if claim_class in EVIDENCE_REQUIRED_CLAIM_CLASSES and not obj.get("evidence_ids"):
+            errors.append(
+                f"{obj['id']}: claim_class {claim_class} requires evidence_ids"
+            )
 
     for obj in by_type["interpretation"]:
         for evidence_id in obj["evidence_ids"]:
@@ -106,21 +113,28 @@ def main() -> int:
         for older_id in obj["supersedes_adjudication_ids"]:
             require_ref(obj["id"], older_id, "adjudication")
 
+    adjudications = {obj["id"]: obj for obj in by_type["adjudication"]}
+
     for obj in by_type["lifecycle_event"]:
         require_ref(obj["id"], obj["subject_id"])
         require_ref(obj["id"], obj["caused_by_adjudication_id"], "adjudication")
         if obj.get("successor_id"):
             require_ref(obj["id"], obj["successor_id"])
+        cause = adjudications.get(obj["caused_by_adjudication_id"])
+        if cause and cause.get("subject_id") != obj.get("subject_id"):
+            errors.append(
+                f"{obj['id']}: lifecycle cause {cause['id']} adjudicates "
+                f"{cause.get('subject_id')} not lifecycle subject {obj.get('subject_id')}"
+            )
 
-    adjudications = {obj["id"]: obj for obj in by_type["adjudication"]}
     for definition in by_type["node_definition"]:
         adjudication = adjudications.get(definition["accepted_by_adjudication_id"])
         if adjudication and not (
             adjudication["subject_id"] == definition["id"]
-            and adjudication["decision"] == "ACCEPT"
+            and adjudication["decision"] in POSITIVE_DEFINITION_DECISIONS
         ):
             errors.append(
-                f"{definition['id']}: accepting adjudication does not ACCEPT this definition"
+                f"{definition['id']}: accepting adjudication does not positively adjudicate this definition"
             )
 
     graph = {
@@ -143,6 +157,24 @@ def main() -> int:
 
     for node in sorted(graph):
         visit(node)
+
+    superseded_adjudication_ids = {
+        older_id
+        for adjudication in by_type["adjudication"]
+        for older_id in adjudication.get("supersedes_adjudication_ids", [])
+    }
+    active_current_by_subject = defaultdict(list)
+    for adjudication in by_type["adjudication"]:
+        if (
+            adjudication["id"] not in superseded_adjudication_ids
+            and adjudication.get("authority_scope") == "CURRENT_CANON"
+        ):
+            active_current_by_subject[adjudication["subject_id"]].append(adjudication["id"])
+    for subject_id, ids in sorted(active_current_by_subject.items()):
+        if len(ids) > 1:
+            errors.append(
+                f"{subject_id}: multiple active CURRENT_CANON adjudications {sorted(ids)}"
+            )
 
     forbidden_source_fields = {
         "current_authority", "historical_authority_at_time", "evidentiary_value",
