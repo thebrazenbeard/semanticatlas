@@ -9,6 +9,7 @@ from pathlib import Path
 TYPE_PREFIX = {
     "source_instance": "SRCI",
     "evidence_span": "EVID",
+    "evidence_projection": "EPROJ",
     "node": "NODE",
     "node_definition": "NDEF",
     "relation_type": "RTYPE",
@@ -21,8 +22,8 @@ UUID_RE = re.compile(
     r"^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
 )
 CANON_DIRS = (
-    "sources", "evidence", "nodes", "node_definitions", "propositions",
-    "interpretations", "adjudications", "lifecycle",
+    "sources", "evidence", "evidence_projections", "nodes", "node_definitions",
+    "propositions", "interpretations", "adjudications", "lifecycle",
 )
 
 
