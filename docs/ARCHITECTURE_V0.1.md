@@ -13,7 +13,7 @@ Current semantic canon is conferred only by the active explicit `adjudication` c
 ## First-class objects
 
 - `source_instance`: neutral source identity and custody metadata.
-- `evidence_span`: source-bound exact/verifiable evidence with explicit locator and SHA-256.
+- `evidence_span`: source-bound exact/verifiable evidence with declared representation/hash basis.
 - `evidence_projection`: derivative representation of source material, including privacy-minimized summaries, with its own representation digest and explicit fidelity/provenance limits.
 - `node`: stable concept identity while defensible semantic continuity survives.
 - `node_definition`: append-only definition revision for a node.
@@ -80,15 +80,29 @@ For Vera-decided adjudications, the mapper preserves `semantic_state=DECIDED`, d
 
 For privacy-minimized staging evidence, the mapper follows Vera's adjudication and targets canonical-candidate `evidence_projection` / `EPROJ-*`, not `evidence_span` / `EVID-*`. Adjudication references to those staging records preserve the projection target instead of rebadging them as exact evidence.
 
+For exact-evidence candidates the mapper now exposes digest-basis, source-version, and representation-contract debt separately. Existing research `digest` values therefore do not imply promotion readiness unless the hashed representation is also identified and reproducible.
+
 Research digest debt remains visible. Green staging parsing does not imply semantic promotion, and canonical validation cannot be obtained by placeholder hashes.
 
 ## Evidence span versus evidence projection
 
-Vera adjudicated privacy-minimized source representations as a separate derivative canonical object class.
+Vera adjudicated privacy-minimized source representations as a separate derivative canonical object class and separately adjudicated the exact-evidence hash-basis contract.
 
 ### `evidence_span`
 
-`evidence_span` retains the strong invariant: it is source-bound exact/verifiable evidence. It carries a source instance, source-relative locator, and exact span SHA-256. A paraphrase does not become primary evidence because the paraphrase itself is hashable.
+`evidence_span` retains the strong invariant: it is source-bound exact/verifiable evidence. It must identify the source instance and source version, locator, representation contract, digest basis, and SHA-256 of the exact representation actually hashed.
+
+There are exactly three v0.1 digest bases:
+
+- `SOURCE_BYTES_RANGE`: hashes exact source bytes from a stable `[byte_start, byte_end_exclusive)` range. This is the strongest basis and the only basis that itself satisfies a consumer requirement for raw-byte proof.
+- `EXACT_UTF8_SPAN`: hashes exact text returned by an authoritative retrieval surface when stable source byte offsets are unavailable. The retrieved span is encoded as UTF-8 exactly as retrieved. Semantic, whitespace, Unicode, and line-ending normalization are forbidden; canonical fields therefore require `text_encoding=UTF-8` and `normalization=NONE`.
+- `VERIFIED_EXTRACTION_REPRESENTATION`: hashes the exact output of a deterministic extraction from a rich/container source such as DOCX/File-Library material. The record binds extractor identity/version and an explicit representation contract. This proves the extraction representation only; it is not raw-source-byte proof.
+
+For `SOURCE_BYTES_RANGE`, validation additionally requires `byte_end_exclusive > byte_start`.
+
+A summary, paraphrase, privacy projection, named-section label by itself, or OCR guess is not an exact evidence span and cannot use a synthetic digest basis to become one. If raw source bytes are unavailable, that limitation remains an explicit evidence ceiling rather than being erased by a stronger-sounding hash field.
+
+A consumer that specifically requires raw-byte custody must accept only `SOURCE_BYTES_RANGE`. `EXACT_UTF8_SPAN` and `VERIFIED_EXTRACTION_REPRESENTATION` remain exact only within their declared retrieval/extraction fidelity.
 
 ### `evidence_projection`
 
