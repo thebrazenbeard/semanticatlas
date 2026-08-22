@@ -28,6 +28,17 @@ TYPE_MAP = {
     "vera_adjudication_decision": ("adjudication", "ADJ"),
 }
 
+STAGING_PREFIX_MAP = {
+    "candidate_source_instance": "SINST",
+    "candidate_evidence_span": "EV",
+    "candidate_node": "NODE",
+    "candidate_definition": "DEF",
+    "candidate_proposition": "PROP",
+    "candidate_interpretation": "INT",
+    "candidate_adjudication_packet": "ADJPKT",
+    "vera_adjudication_decision": "VADJ",
+}
+
 REFERENCE_PREFIX_MAP = {
     "SINST": "SRCI",
     "EV": "EVID",
@@ -51,8 +62,17 @@ def _uuid_payload(value: str) -> str:
 
 def canonical_id(record_type: str, staging_id: str) -> str:
     target = TYPE_MAP.get(record_type)
-    if not target:
+    expected_prefix = STAGING_PREFIX_MAP.get(record_type)
+    if not target or not expected_prefix:
         raise ValueError(f"unsupported staging record_type {record_type!r}")
+    if not isinstance(staging_id, str) or "-" not in staging_id:
+        raise ValueError(f"invalid staging id {staging_id!r}")
+    actual_prefix = staging_id.split("-", 1)[0]
+    if actual_prefix != expected_prefix:
+        raise ValueError(
+            f"staging id prefix {actual_prefix!r} does not match "
+            f"record_type {record_type!r} expected prefix {expected_prefix!r}"
+        )
     return f"{target[1]}-{_uuid_payload(staging_id)}"
 
 
