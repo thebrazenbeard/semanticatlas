@@ -1,6 +1,6 @@
 # Semantic Atlas Branch and Promotion Policy
 
-Status: ENGINEERING CANDIDATE / REVIEW REQUIRED
+Status: ENGINEERING CANDIDATE / VERA REVIEW REQUIRED
 
 ## Branch roles
 
@@ -24,7 +24,7 @@ Promotion requires, as applicable:
 5. semantic authorship / endorsement ownership mapping for authored semantic content;
 6. claim class mapping so semantic meaning cannot masquerade as external fact, universal ontology, or command authority;
 7. predicate membership in the frozen relation vocabulary, or a separately adjudicated vocabulary extension;
-8. independent temporal/currentness, support, truth, authority, provenance, salience, consent, identity, and lifecycle axes;
+8. independent temporal/currentness, support, truth, authority-context, provenance, salience, consent, identity, and lifecycle axes;
 9. explicit semantic adjudication for any current-canon promotion;
 10. append-only lifecycle/supersession links where a prior canonical record is revised.
 
@@ -45,9 +45,23 @@ Canonical evidence does not inherit that permissiveness. A canonical `evidence_s
 
 Vera-authored first-person semantic meaning may be authored and later endorsed as Vera's semantic state without Patrick ratifying the meaning. That authorship does not create external factual truth, universal ontology, user-authored meaning, command authority, or permanent canon.
 
-Canonical authored semantic records therefore preserve `semantic_author`, `endorsement_owner`, and `claim_class`; adjudication separately preserves `decided_by`.
+Canonical authored semantic records preserve `semantic_author`, `endorsement_owner`, and `claim_class`; adjudication separately preserves `decided_by`.
 
-A user statement about Vera's meaning may be evidence or influence without becoming authorship transfer. A factual premise about external reality remains separately evidence-bound.
+A user statement about Vera's meaning may be evidence or influence without becoming authorship transfer. External factual, universal-ontology, and mixed claims remain evidence-bound.
+
+## Canon authority boundary
+
+A proposition cannot make itself canonical. Its `authority_context` is descriptive and deliberately lacks a `CURRENT_CANON` value.
+
+Only an active explicit adjudication with `authority_scope=CURRENT_CANON` can confer current-canon authority. `current_view` and generated indexes are derived from that chain and have no authority of their own.
+
+## Lifecycle correction boundary
+
+Lifecycle history is append-only; effective semantic state is revisable.
+
+`SUPERSEDED`, `RETRACTED`, `RETIRED`, and similar events remain immutable historical records. They affect current state only while their causing adjudication remains active. A later explicit successor adjudication may `REOPEN`, `REINSTATE`, `REFINE`, or otherwise change the effective state while preserving the prior event.
+
+Irreversible invalidation is reserved for structurally impossible or identity-corrupt records. Such a record is not resurrected; a new valid object identity is created instead.
 
 ## Pull request requirements
 
@@ -62,15 +76,12 @@ PRs into `main` should:
 
 Green CI proves structural validity and deterministic generation. It does not prove semantic truth.
 
-## Current v0.1 freeze blockers
+## Review state
 
-Two semantic questions remain open and must not be inferred from implementation defaults:
+The two v0.1 semantic freeze questions raised during Mune review have been adjudicated by Vera and encoded on the architecture branch: adjudication-only current canon and active-chain/revisable lifecycle semantics.
 
-1. whether proposition-level `authority` may include `CURRENT_CANON` even though active adjudication is the sole canon authority;
-2. whether terminal lifecycle effects are irreversible or whether effective lifecycle state is derived from the active adjudication chain and can therefore be corrected append-only.
-
-Until Vera adjudicates those boundaries, PR #2 remains draft and schema v0.1 is not frozen.
+PR #2 remains unmerged pending exact-head CI and Vera review of the encoded implementation. No research population is promoted by that review state.
 
 ## Merge discipline
 
-Do not merge the research branch directly to `main`. Do not merge PR #2 merely because CI is green. Semantic review and the current freeze blockers are separate acceptance gates.
+Do not merge the research branch directly to `main`. Do not merge PR #2 merely because CI is green. Exact-head engineering validation and Vera semantic review are separate acceptance gates.
