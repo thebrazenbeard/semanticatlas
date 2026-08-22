@@ -38,17 +38,17 @@
     },
     "semantic_axes": {
       "type": "object", "additionalProperties": false,
-      "required": ["currentness", "support", "truth", "authority", "provenance", "salience", "consent", "identity_relevance", "lifecycle"],
+      "required": ["currentness", "support", "truth", "authority_context", "provenance", "salience", "consent", "identity_relevance", "lifecycle"],
       "properties": {
         "currentness": {"enum": ["CURRENT", "HISTORICAL", "AT_TIME", "INTERVAL", "TIMELESS", "UNKNOWN", "NOT_APPLICABLE"]},
         "support": {"enum": ["SUPPORTED", "PARTIALLY_SUPPORTED", "CONTESTED", "UNRESOLVED", "UNSUPPORTED", "UNKNOWN", "NOT_APPLICABLE"]},
         "truth": {"enum": ["ACCEPTED", "CONTESTED", "REJECTED", "UNRESOLVED", "UNKNOWN", "NOT_APPLICABLE"]},
-        "authority": {"enum": ["CURRENT_CANON", "HISTORICAL_AT_TIME", "RESEARCH_ONLY", "NONE", "UNKNOWN", "NOT_APPLICABLE"]},
+        "authority_context": {"enum": ["CURRENT_PROJECT_AUTHORITY_INPUT", "HISTORICAL_AUTHORITY_AT_TIME", "SOURCE_GOVERNING_AT_TIME", "RESEARCH_ONLY", "NONE", "UNKNOWN", "NOT_APPLICABLE"]},
         "provenance": {"enum": ["PRIMARY_SOURCE", "DERIVED_SOURCE", "INTERPRETATION", "USER_STATEMENT", "ASSISTANT_INFERENCE", "MIXED", "UNKNOWN", "NOT_APPLICABLE"]},
         "salience": {"enum": ["HIGH", "MEDIUM", "LOW", "UNKNOWN", "NOT_APPLICABLE"]},
         "consent": {"enum": ["PRESENT", "ABSENT", "REVOKED", "UNKNOWN", "NOT_APPLICABLE"]},
         "identity_relevance": {"enum": ["DIRECT", "INDIRECT", "NONE", "UNKNOWN", "NOT_APPLICABLE"]},
-        "lifecycle": {"enum": ["ACTIVE", "SUPERSEDED", "RETRACTED", "RETIRED", "UNRESOLVED", "UNKNOWN", "NOT_APPLICABLE"]}
+        "lifecycle": {"enum": ["ACTIVE", "SUPERSEDED", "RETRACTED", "RETIRED", "REOPENED", "REINSTATED", "UNRESOLVED", "UNKNOWN", "NOT_APPLICABLE"]}
       }
     },
     "source_instance": {
@@ -127,7 +127,7 @@
       "required": ["schema_version", "object_type", "id", "subject_id", "decision", "authority_scope", "decided_by", "rationale", "evidence_ids", "supersedes_adjudication_ids"],
       "properties": {
         "schema_version": {"const": "0.1"}, "object_type": {"const": "adjudication"}, "id": {"type": "string", "pattern": "^ADJ-"}, "subject_id": {"$ref": "#/$defs/uuid_id"},
-        "decision": {"enum": ["ACCEPT", "REJECT", "REFINE", "SUPERSEDE", "RETRACT", "DEFER", "UNRESOLVED"]}, "authority_scope": {"enum": ["CURRENT_CANON", "HISTORICAL_ONLY", "RESEARCH_ONLY", "NONE"]},
+        "decision": {"enum": ["ACCEPT", "REJECT", "REFINE", "SUPERSEDE", "RETRACT", "REOPEN", "REINSTATE", "DEFER", "UNRESOLVED"]}, "authority_scope": {"enum": ["CURRENT_CANON", "HISTORICAL_ONLY", "RESEARCH_ONLY", "NONE"]},
         "decided_by": {"$ref": "#/$defs/semantic_principal"}, "rationale": {"type": "string", "minLength": 1}, "evidence_ids": {"type": "array", "items": {"type": "string", "pattern": "^EVID-"}, "uniqueItems": true},
         "supersedes_adjudication_ids": {"type": "array", "items": {"type": "string", "pattern": "^ADJ-"}, "uniqueItems": true}
       }
@@ -137,7 +137,7 @@
       "required": ["schema_version", "object_type", "id", "subject_id", "event_type", "caused_by_adjudication_id", "successor_id"],
       "properties": {
         "schema_version": {"const": "0.1"}, "object_type": {"const": "lifecycle_event"}, "id": {"type": "string", "pattern": "^LIFE-"}, "subject_id": {"$ref": "#/$defs/uuid_id"},
-        "event_type": {"enum": ["SUPERSEDED", "REFINED", "RETRACTED", "RETIRED", "CORRECTED"]}, "caused_by_adjudication_id": {"type": "string", "pattern": "^ADJ-"},
+        "event_type": {"enum": ["SUPERSEDED", "REFINED", "RETRACTED", "RETIRED", "CORRECTED", "REOPENED", "REINSTATED"]}, "caused_by_adjudication_id": {"type": "string", "pattern": "^ADJ-"},
         "successor_id": {"oneOf": [{"$ref": "#/$defs/uuid_id"}, {"type": "null"}]}, "notes": {"type": ["string", "null"]}
       }
     }
