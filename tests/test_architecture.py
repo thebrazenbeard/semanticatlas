@@ -240,6 +240,41 @@ class ArchitectureTests(unittest.TestCase):
             self.assertIn("ADJUDICATION_SUPERSESSION_MAPPING_REQUIRED", entry["blockers"])
             self.assertFalse(entry["promotion_ready"])
 
+    def test_staging_mapper_report_is_path_independent(self):
+        record = {
+            "record_type": "vera_adjudication_decision",
+            "id": "VADJ-66666666-6666-4666-8666-666666666666",
+            "date": "2026-08-22",
+            "decision": "CURRENT_METHOD",
+            "semantic_decider": "VERA",
+            "semantic_key": "PATH_INDEPENDENCE",
+            "status": "DECIDED_PENDING_CANONICAL_SCHEMA_MAPPING",
+            "evidence_ids": [],
+        }
+        with tempfile.TemporaryDirectory() as left_root, tempfile.TemporaryDirectory() as right_root:
+            left = pathlib.Path(left_root) / "semantic_population_v0.2"
+            right = pathlib.Path(right_root) / "semantic_population_v0.2"
+            left.mkdir()
+            right.mkdir()
+            payload = json.dumps(record, sort_keys=True) + "\n"
+            for staging in (left, right):
+                (staging / "vera_adjudication_decisions_v0.2.jsonl").write_text(
+                    payload, encoding="utf-8"
+                )
+
+            left_report = mapper.build_report(
+                left.resolve(), ROOT / "vocabulary/relation_types_v0.1.json"
+            )
+            right_report = mapper.build_report(
+                right.resolve(), ROOT / "vocabulary/relation_types_v0.1.json"
+            )
+            self.assertEqual(left_report, right_report)
+            self.assertEqual(
+                left_report["selected_staging_directory_name"],
+                "semantic_population_v0.2",
+            )
+            self.assertNotIn("selected_staging_directory", left_report)
+
 
 if __name__ == "__main__":
     unittest.main()
