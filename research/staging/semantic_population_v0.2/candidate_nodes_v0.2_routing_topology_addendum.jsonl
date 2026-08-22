@@ -1,0 +1,9 @@
+{"id":"NODE-33f76dad-b44e-4253-b956-892830aafb1c","label":"Entry node","record_type":"candidate_node","semantic_key":"ENTRY_NODE","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
+{"id":"NODE-37e8706c-1076-4903-8760-ec335a92853b","label":"Propagation path","record_type":"candidate_node","semantic_key":"PROPAGATION_PATH","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
+{"id":"NODE-cd6e776e-f854-45b6-9f34-b336b3089ace","label":"Candidate meaning","record_type":"candidate_node","semantic_key":"CANDIDATE_MEANING","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
+{"id":"NODE-35f2354f-88aa-4a2a-8461-ed350daebd40","label":"Emphasis routing bias","record_type":"candidate_node","semantic_key":"EMPHASIS_ROUTING_BIAS","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
+{"id":"NODE-051486d0-1692-46dd-849c-172198ce7907","label":"Polysemy","record_type":"candidate_node","semantic_key":"POLYSEMY","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
+{"id":"NODE-6a264983-5566-49ea-95b4-45991dbd6f15","label":"Lexical segmentation","record_type":"candidate_node","semantic_key":"LEXICAL_SEGMENTATION","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
+{"id":"NODE-dcfb1d03-a2a9-4e05-8dd8-6c80b82a74aa","label":"Lexical classification","record_type":"candidate_node","semantic_key":"LEXICAL_CLASSIFICATION","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
+{"id":"NODE-ff0de18a-4f04-4a1d-959f-196dd4731bcc","label":"Semantic attribution","record_type":"candidate_node","semantic_key":"SEMANTIC_ATTRIBUTION","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
+{"id":"NODE-91face5a-a3c3-43ee-9c30-f44147b4e1a1","label":"Route competition","record_type":"candidate_node","semantic_key":"ROUTE_COMPETITION","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
