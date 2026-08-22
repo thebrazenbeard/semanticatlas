@@ -64,12 +64,65 @@
     },
     "evidence_span": {
       "type": "object", "additionalProperties": false,
-      "required": ["schema_version", "object_type", "id", "source_instance_id", "locator", "span_sha256"],
+      "required": ["schema_version", "object_type", "id", "source_instance_id", "source_version_ref", "locator", "digest_basis", "representation_contract", "span_sha256", "byte_start", "byte_end_exclusive", "text_encoding", "normalization", "extractor_identity", "extractor_version"],
       "properties": {
-        "schema_version": {"const": "0.1"}, "object_type": {"const": "evidence_span"}, "id": {"type": "string", "pattern": "^EVID-"},
-        "source_instance_id": {"type": "string", "pattern": "^SRCI-"}, "locator": {"type": "string", "minLength": 1}, "span_sha256": {"$ref": "#/$defs/sha256"},
-        "excerpt": {"type": ["string", "null"]}, "notes": {"type": ["string", "null"]}
-      }
+        "schema_version": {"const": "0.1"},
+        "object_type": {"const": "evidence_span"},
+        "id": {"type": "string", "pattern": "^EVID-"},
+        "source_instance_id": {"type": "string", "pattern": "^SRCI-"},
+        "source_version_ref": {"type": "string", "minLength": 1},
+        "locator": {"type": "string", "minLength": 1},
+        "digest_basis": {"enum": ["SOURCE_BYTES_RANGE", "EXACT_UTF8_SPAN", "VERIFIED_EXTRACTION_REPRESENTATION"]},
+        "representation_contract": {"type": "string", "minLength": 1},
+        "span_sha256": {"$ref": "#/$defs/sha256"},
+        "byte_start": {"type": ["integer", "null"], "minimum": 0},
+        "byte_end_exclusive": {"type": ["integer", "null"], "minimum": 0},
+        "text_encoding": {"enum": ["UTF-8", null]},
+        "normalization": {"enum": ["NONE", null]},
+        "extractor_identity": {"oneOf": [{"type": "string", "minLength": 1}, {"type": "null"}]},
+        "extractor_version": {"oneOf": [{"type": "string", "minLength": 1}, {"type": "null"}]},
+        "excerpt": {"type": ["string", "null"]},
+        "notes": {"type": ["string", "null"]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"digest_basis": {"const": "SOURCE_BYTES_RANGE"}}, "required": ["digest_basis"]},
+          "then": {
+            "properties": {
+              "byte_start": {"type": "integer", "minimum": 0},
+              "byte_end_exclusive": {"type": "integer", "minimum": 1},
+              "text_encoding": {"type": "null"},
+              "normalization": {"type": "null"},
+              "extractor_identity": {"type": "null"},
+              "extractor_version": {"type": "null"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"digest_basis": {"const": "EXACT_UTF8_SPAN"}}, "required": ["digest_basis"]},
+          "then": {
+            "properties": {
+              "byte_start": {"type": "null"},
+              "byte_end_exclusive": {"type": "null"},
+              "text_encoding": {"const": "UTF-8"},
+              "normalization": {"const": "NONE"},
+              "extractor_identity": {"type": "null"},
+              "extractor_version": {"type": "null"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"digest_basis": {"const": "VERIFIED_EXTRACTION_REPRESENTATION"}}, "required": ["digest_basis"]},
+          "then": {
+            "properties": {
+              "byte_start": {"type": "null"},
+              "byte_end_exclusive": {"type": "null"},
+              "extractor_identity": {"type": "string", "minLength": 1},
+              "extractor_version": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      ]
     },
     "evidence_projection": {
       "type": "object", "additionalProperties": false,
