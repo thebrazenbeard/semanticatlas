@@ -33,6 +33,18 @@ jobs:
       - name: Run architecture regressions
         run: python -m unittest discover -s tests -v
 
+      - name: Verify staging mapper has no canonical write surface
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('build/map_research_staging.py').read_text(encoding='utf-8')
+          forbidden = ['atlas/sources', 'atlas/evidence', 'atlas/nodes', 'atlas/propositions', 'atlas/adjudications']
+          hits = [item for item in forbidden if item in text]
+          if hits:
+              raise SystemExit(f'forbidden canonical write path literals in staging mapper: {hits}')
+          print('PASS: staging mapper exposes no canonical atlas write path literals')
+          PY
+
       - name: Build derived outputs twice
         run: |
           rm -rf /tmp/atlas-build-a /tmp/atlas-build-b
