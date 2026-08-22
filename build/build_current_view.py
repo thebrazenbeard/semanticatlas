@@ -12,6 +12,9 @@ CANON_DIRS = (
     "interpretations", "adjudications", "lifecycle",
 )
 
+POSITIVE_CURRENT_DECISIONS = {"ACCEPT", "REFINE", "REOPEN", "REINSTATE"}
+TERMINAL_EVENT_TYPES = {"SUPERSEDED", "RETRACTED", "RETIRED"}
+
 
 def load_objects(root: Path):
     objects = {}
@@ -30,24 +33,32 @@ def active_adjudications(objects):
         object_id: obj for object_id, obj in objects.items()
         if obj.get("object_type") == "adjudication"
     }
-    superseded = {
+    superseded_ids = {
         older_id
         for adjudication in adjudications.values()
         for older_id in adjudication.get("supersedes_adjudication_ids", [])
     }
-    retired_subjects = {
+    active_ids = set(adjudications) - superseded_ids
+
+    # Lifecycle events are immutable history, but only an event whose causing
+    # adjudication is still active affects the current projection. If a later
+    # REOPEN/REINSTATE/REFINE adjudication supersedes the earlier disposition,
+    # the older lifecycle event remains in history without remaining effective.
+    active_terminal_subjects = {
         obj["subject_id"]
         for obj in objects.values()
         if obj.get("object_type") == "lifecycle_event"
-        and obj.get("event_type") in {"SUPERSEDED", "RETRACTED", "RETIRED"}
+        and obj.get("event_type") in TERMINAL_EVENT_TYPES
+        and obj.get("caused_by_adjudication_id") in active_ids
     }
+
     return [
         adjudication
         for adjudication_id, adjudication in sorted(adjudications.items())
-        if adjudication_id not in superseded
-        and adjudication["decision"] == "ACCEPT"
+        if adjudication_id in active_ids
+        and adjudication["decision"] in POSITIVE_CURRENT_DECISIONS
         and adjudication["authority_scope"] == "CURRENT_CANON"
-        and adjudication["subject_id"] not in retired_subjects
+        and adjudication["subject_id"] not in active_terminal_subjects
     ]
 
 
@@ -87,7 +98,7 @@ def build(root: Path, outdir: Path):
     view = {
         "schema_version": "0.1",
         "derived": True,
-        "authority": "NONE_DERIVED_FROM_EXPLICIT_ADJUDICATION",
+        "authority": "NONE_DERIVED_FROM_ACTIVE_EXPLICIT_ADJUDICATION_CHAIN",
         "active_adjudication_ids": sorted(item["id"] for item in active),
         "active_subject_ids": subject_ids,
         "graph_edges": graph_edges,
@@ -116,7 +127,7 @@ def build(root: Path, outdir: Path):
     )
     connection.execute(
         "INSERT INTO meta VALUES(?, ?)",
-        ("authority", "NONE_DERIVED_FROM_EXPLICIT_ADJUDICATION"),
+        ("authority", "NONE_DERIVED_FROM_ACTIVE_EXPLICIT_ADJUDICATION_CHAIN"),
     )
     for obj in sorted(subjects, key=lambda item: item["id"]):
         connection.execute(
