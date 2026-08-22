@@ -140,15 +140,24 @@ class EvidenceProjectionTests(unittest.TestCase):
             self.assertNotEqual(failed.returncode, 0)
             self.assertIn("evidence_projection_ids cannot satisfy an exact-source-evidence requirement", failed.stdout)
 
-            exact_bytes = b"exact source span"
+            exact_text = "exact source span"
             evidence = {
                 "schema_version": "0.1",
                 "object_type": "evidence_span",
                 "id": evidence_id,
                 "source_instance_id": source_id,
+                "source_version_ref": "message-version-1",
                 "locator": "message:1",
-                "span_sha256": hashlib.sha256(exact_bytes).hexdigest(),
-                "excerpt": "exact source span",
+                "digest_basis": "EXACT_UTF8_SPAN",
+                "representation_contract": "Exact retrieved message text encoded as UTF-8 without normalization",
+                "span_sha256": hashlib.sha256(exact_text.encode("utf-8")).hexdigest(),
+                "byte_start": None,
+                "byte_end_exclusive": None,
+                "text_encoding": "UTF-8",
+                "normalization": "NONE",
+                "extractor_identity": None,
+                "extractor_version": None,
+                "excerpt": exact_text,
             }
             (root / "atlas" / "evidence" / "evidence.json").write_text(json.dumps(evidence), encoding="utf-8")
             proposition["evidence_ids"] = [evidence_id]
