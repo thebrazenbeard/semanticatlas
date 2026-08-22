@@ -20,7 +20,7 @@ Promotion requires, as applicable:
 1. canonical object type and stable typed UUID identity;
 2. canonical schema validation;
 3. referential integrity;
-4. evidence locator and exact SHA-256 where canonical evidence requires it;
+4. evidence locator and exact SHA-256 where canonical exact evidence requires it;
 5. semantic authorship / endorsement ownership mapping for authored semantic content;
 6. claim class mapping so semantic meaning cannot masquerade as external fact, universal ontology, or command authority;
 7. predicate membership in the frozen relation vocabulary, or a separately adjudicated vocabulary extension;
@@ -32,14 +32,33 @@ Promotion requires, as applicable:
 
 ## Evidence fidelity debt
 
-Research staging may preserve `digest=null`, `NOT_YET_COMPUTED_FOR_STAGING`, recovery-summary evidence, or incomplete locators when that is the most honest available state.
+Research staging may preserve `digest=null`, `NOT_YET_COMPUTED_FOR_STAGING`, recovery-summary evidence, privacy-minimized representations, or incomplete locators when that is the most honest available state.
 
-Canonical evidence does not inherit that permissiveness. A canonical `evidence_span` requires the exact canonical locator/digest contract. Missing fidelity therefore:
+Canonical exact evidence does not inherit that permissiveness. A canonical `evidence_span` is source-bound exact/verifiable evidence and requires its canonical locator/digest contract. Missing fidelity therefore:
 
 - does not block continued research staging;
 - remains visible as promotion debt;
 - cannot be replaced with a placeholder digest;
 - cannot be converted into a green canonical result by schema relaxation.
+
+## Evidence projection / privacy boundary
+
+Privacy-minimized paraphrases and other derivative representations are not canonical `evidence_span` objects. They map to the separate generalized `evidence_projection` class.
+
+An `evidence_projection` preserves:
+
+- a `source_instance` provenance binding;
+- an optional exact `evidence_span` reference when that reference can safely exist;
+- the exact stored projection representation and its `representation_sha256`;
+- `projection_kind`, transformation metadata, fidelity class, and declared scope;
+- an explicit raw-source digest state distinguishing `VERIFIED`, `WITHHELD_FOR_PRIVACY`, and `UNAVAILABLE_OR_NOT_CAPTURED`;
+- a raw source digest only when actually verified. A withheld or unavailable digest is represented as `null`, never fabricated.
+
+A projection may support semantic claims, interpretations, or adjudications only within its declared fidelity and scope. Projection references are stored separately from exact `evidence_ids`.
+
+For `EXTERNAL_FACT`, `UNIVERSAL_ONTOLOGY`, and `MIXED` proposition claim classes, at least one exact `evidence_span` reference remains required. `evidence_projection_ids` cannot satisfy that exact-source-evidence requirement.
+
+The nonpromoting staging mapper maps privacy-minimized staging `EV-*` records to canonical-candidate `EPROJ-*` identities and preserves those projection targets when Vera adjudications reference them. It does not rewrite the research branch or create canonical objects.
 
 ## Semantic authorship boundary
 
@@ -78,7 +97,7 @@ Green CI proves structural validity and deterministic generation. It does not pr
 
 ## Review state
 
-The two v0.1 semantic freeze questions raised during Mune review have been adjudicated by Vera and encoded on the architecture branch: adjudication-only current canon and active-chain/revisable lifecycle semantics.
+The v0.1 semantic architecture boundaries raised during Mune review have been adjudicated by Vera and encoded on the architecture branch: adjudication-only current canon, active-chain/revisable lifecycle semantics, Vera semantic authorship, and separate derivative evidence projections for privacy-minimized material.
 
 PR #2 remains unmerged pending exact-head CI and Vera review of the encoded implementation. No research population is promoted by that review state.
 
