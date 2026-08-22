@@ -8,19 +8,20 @@ Purpose: move Semantic Atlas from passive candidate extraction into explicit Ver
 
 Across v0.1 plus this v0.2 tranche:
 
-- Neutral source instances: 20
-- Evidence spans: 38
+- Neutral source instances: 21
+- Evidence spans: 39
 - Semantic nodes: 52
 - Definition records: 52
 - Propositions: 47
 - Interpretations: 13
 - Candidate adjudication packets retained for audit: 12
-- Explicit Vera adjudication decisions: 26
+- Explicit Vera adjudication decisions: 27
 
 These totals describe research staging objects, not canonical production rows.
 
 ## v0.2 files
 
+- `candidate_source_instances_v0.2_additions.jsonl`
 - `candidate_nodes_v0.2_additions.jsonl`
 - `candidate_definitions_v0.2_additions.jsonl`
 - `candidate_evidence_spans_current_v0.2.jsonl`
@@ -30,7 +31,7 @@ These totals describe research staging objects, not canonical production rows.
 - `vera_adjudication_decisions_v0.1.jsonl`
 - `vera_adjudication_decisions_v0.2.jsonl`
 
-Primary-recovery narrative: `research/provenance/PRIMARY_RECOVERY_PASS_2026-08-22_V0.1.md` plus the June 30 primary span in the v0.2 evidence file.
+Primary-recovery narrative: `research/provenance/PRIMARY_RECOVERY_PASS_2026-08-22_V0.1.md`, supplemented by the June 30 and integrated R8A0 spans in the v0.2 evidence file.
 
 ## What changed from v0.1
 
@@ -49,9 +50,12 @@ Direct File Library source recovery now supports:
 - July 5 entrusted cooperation and surrender/agency separation;
 - July 9 semantic routing, convergence, reframing, interpretive stability, and mistakes-as-data;
 - July 15 interpretation/importance separation and anti-permanent-authority discipline;
-- July 26 observation/interpretation/confidence/provenance separation.
+- July 26 observation/interpretation/confidence/provenance separation;
+- integrated R8A0 symbolic-meaning behavior: engage intended symbolic/relational meaning without presenting it as established factual truth.
 
 The narrower claim that the no-offscreen-waiting formulation itself existed on June 29 remains unresolved. The Atlas records the June 29 precursor and July 1 exact recovered formulation separately rather than smoothing the chronology because it would look prettier.
+
+The paired R8A0 Meaning/Symbolism and Ambiguity/Clarity final handoff is still not surfaced. However, `VERA_R8A0_LAWS.md` now supplies downstream integrated release evidence that the symbolic-meaning/reality-boundary distinction survived implementation. That downstream evidence is recorded separately rather than pretending it is the missing workstream handoff.
 
 ### New current semantic objects
 
@@ -95,6 +99,7 @@ Current endorsements/methods now include:
 - anti-collapse of meaning/salience/truth/consent/permission/authority/identity/currentness;
 - observation/interpretation/confidence separation;
 - symbolism/literal-fact dual-layer interpretation;
+- integrated R8A0 downstream survival of symbolic meaning with a reality boundary;
 - similarity not creating truth/identity/authority/currentness;
 - semantic convergence;
 - reframing distinct from completion;
@@ -125,7 +130,7 @@ Remaining integration gates:
 
 Highest-value population work after the current tranche:
 
-1. Recover final R8A0 Meaning/Symbolism and Ambiguity/Clarity outputs, not merely their startup assignments.
+1. Continue searching for the paired R8A0 Meaning/Symbolism and Ambiguity/Clarity final handoff; use integrated R8A0 laws as downstream survival evidence meanwhile, not as a counterfeit replacement.
 2. Atomize the July Semantic Atlas topology itself: entry node, propagation path, destination node, convergence, ambiguity, stability, emphasis/path selection, polysemy, and route correction.
 3. Trace which July semantic-memory concepts demonstrably survive into R9 rather than merely resembling them.
 4. Map semantic-state transitions that alter routing without altering truth/consent/authority, beginning with safety-salience -> defensive-routing modulation.
