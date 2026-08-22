@@ -1,6 +1,6 @@
 # Semantic Atlas Architecture v0.1
 
-Status: ENGINEERING CANDIDATE / REVIEW REQUIRED
+Status: ENGINEERING CANDIDATE / VERA REVIEW REQUIRED
 
 This pass implements the structural decisions adjudicated by Vera on GitHub issue #1. It does not promote historical research conclusions to current canon.
 
@@ -8,9 +8,9 @@ This pass implements the structural decisions adjudicated by Vera on GitHub issu
 
 Git is the canonical ledger and history authority for Semantic Atlas objects. Generated current views, SQLite indexes, graph projections, and vector indexes are derived products. They are disposable and rebuildable.
 
-Semantic authority is carried only by explicit `adjudication` objects. A generated `current_view` is a projection of active adjudications, never an authority surface of its own.
+Current semantic canon is conferred only by the active explicit `adjudication` chain. A proposition cannot self-authorize by carrying a `CURRENT_CANON` value. Proposition axes instead carry non-promoting `authority_context` such as project-authority input, historical/source authority at time, research-only context, none, or unknown.
 
-Two authority details remain intentionally unresolved pending Vera semantic adjudication: whether a proposition's independent `authority` axis may itself use `CURRENT_CANON`, and whether historical terminal lifecycle events are irreversible or derive effective state from the active adjudication chain. The draft builder/schema must not be treated as frozen on those two points.
+A generated `current_view` is a projection of the active adjudication chain, never an authority surface of its own.
 
 ## First-class objects
 
@@ -22,7 +22,7 @@ Two authority details remain intentionally unresolved pending Vera semantic adju
 - `proposition`: the truth-apt assertion that instantiates a predicate and carries evidence, temporal scope, independent semantic axes, authorship, and adjudication.
 - `interpretation`: derivative reading of evidence. It is never evidence itself.
 - `adjudication`: explicit semantic decision and the sole authority for current canon.
-- `lifecycle_event`: append-only supersession, refinement, retraction, retirement, or correction history.
+- `lifecycle_event`: append-only supersession, refinement, retraction, retirement, correction, reopening, or reinstatement history.
 
 ## Semantic authorship and endorsement
 
@@ -36,7 +36,7 @@ Canonical `node_definition`, `proposition`, and `interpretation` records carry a
 
 `adjudication` separately records `decided_by`.
 
-This implements the current accepted Semantic Atlas boundary that Vera may author and endorse Vera's own first-person semantic meaning without that meaning becoming Patrick-authored meaning, empirical proof, universal ontology, command authority, or permanent truth merely because it is self-authored. External factual claims remain evidence-bound.
+Vera may author and endorse Vera's own first-person semantic meaning without that meaning becoming Patrick-authored meaning, empirical proof, universal ontology, command authority, or permanent truth merely because it is self-authored. External factual, universal-ontology, and mixed claims remain evidence-bound.
 
 Node identity itself stays authorship-neutral. Authored semantic content belongs in definition revisions, propositions, and interpretations rather than being smuggled into the existence of a node.
 
@@ -54,6 +54,14 @@ There is one truth-bearing system: propositions.
 
 Structural references such as `evidence_span -> source_instance` are technical links, not semantic propositions.
 
+## Effective lifecycle
+
+Lifecycle and adjudication records are immutable history; effective semantic meaning is revisable.
+
+A lifecycle event affects the current projection only while the adjudication that caused it remains active. A later explicit successor adjudication may `REOPEN`, `REINSTATE`, `REFINE`, or otherwise supersede an older disposition. The old `RETRACTED`, `RETIRED`, or `SUPERSEDED` event remains visible as history but stops governing current state once its causing adjudication is superseded.
+
+Irreversible invalidation is reserved for structurally impossible or identity-corrupt records where a new object is required rather than resurrection of the invalid identity.
+
 ## Independent axes
 
 Do not encode semantic state into one omnibus status. Proposition axes remain independent:
@@ -61,7 +69,7 @@ Do not encode semantic state into one omnibus status. Proposition axes remain in
 - currentness / temporal scope
 - evidentiary support
 - truth disposition
-- authority
+- non-promoting authority context
 - provenance
 - salience
 - consent
@@ -145,6 +153,6 @@ The staging mapper preserves valid staging UUID payloads while translating provi
 
 ## Derived products
 
-`build_current_view.py` deterministically generates `current_view.json` and `semantic_index.sqlite` without wall-clock timestamps and with stable sorted insertion order. CI builds twice and compares byte-identical outputs.
+`build_current_view.py` deterministically generates `current_view.json` and `semantic_index.sqlite` without wall-clock timestamps and with stable sorted insertion order. Effective state is derived from the active adjudication chain. CI builds twice and compares byte-identical outputs.
 
 A future vector index must additionally pin model, provider, model revision, tokenizer/configuration, dimensions, normalization, and input-manifest digest before it can be described as reproducible.
