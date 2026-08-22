@@ -255,7 +255,9 @@ def build_report(staging: Path, vocabulary: Path) -> dict:
         "report_version": "0.2",
         "mode": "NONPROMOTING_STAGING_READINESS",
         "canonical_write_effect": "NONE",
-        "selected_staging_directory": str(staging),
+        # Never serialize the caller's absolute filesystem path. The directory label is
+        # useful context and remains byte-stable across different machine roots.
+        "selected_staging_directory_name": staging.name,
         "staging_record_count": len(entries),
         "record_type_counts": dict(sorted(type_counts.items())),
         "semantic_state_counts": dict(sorted(semantic_state_counts.items())),
