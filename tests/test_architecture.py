@@ -184,6 +184,62 @@ class ArchitectureTests(unittest.TestCase):
             self.assertEqual(report["blocker_counts"]["PREDICATE_NOT_FROZEN"], 1)
             self.assertFalse(any(item["promotion_ready"] for item in report["entries"]))
 
+    def test_staging_mapper_preserves_decided_vera_adjudications(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = pathlib.Path(tempdir)
+            staging = root / "semantic_population_v0.2"
+            staging.mkdir()
+            decided = {
+                "date": "2026-08-22",
+                "decision": "REFINES_PRIOR_DECISION",
+                "evidence_ids": ["EV-11111111-1111-4111-8111-111111111111"],
+                "id": "VADJ-22222222-2222-4222-8222-222222222222",
+                "predecessor_decision_id": "VADJ-33333333-3333-4333-8333-333333333333",
+                "rationale": "Already semantically decided by Vera; canonical binding remains.",
+                "record_type": "vera_adjudication_decision",
+                "semantic_decider": "VERA",
+                "semantic_key": "EXAMPLE_LINEAGE",
+                "status": "DECIDED_PENDING_CANONICAL_SCHEMA_MAPPING",
+            }
+            (staging / "vera_adjudication_decisions_v0.2.jsonl").write_text(
+                json.dumps(decided) + "\n", encoding="utf-8"
+            )
+
+            report = mapper.build_report(
+                staging, ROOT / "vocabulary/relation_types_v0.1.json"
+            )
+            self.assertEqual(report["report_version"], "0.2")
+            self.assertEqual(report["canonical_write_effect"], "NONE")
+            self.assertEqual(report["record_type_counts"]["vera_adjudication_decision"], 1)
+            self.assertEqual(report["semantic_state_counts"]["DECIDED"], 1)
+
+            entry = report["entries"][0]
+            self.assertEqual(entry["semantic_state"], "DECIDED")
+            self.assertEqual(entry["canonical_object_type"], "adjudication")
+            self.assertEqual(
+                entry["canonical_id"],
+                "ADJ-22222222-2222-4222-8222-222222222222",
+            )
+            mapping = entry["decided_adjudication_mapping"]
+            self.assertEqual(mapping["semantic_decider"], "VERA")
+            self.assertEqual(mapping["canonical_decided_by_candidate"], "VERA")
+            self.assertEqual(mapping["staging_decision"], "REFINES_PRIOR_DECISION")
+            self.assertEqual(mapping["semantic_key"], "EXAMPLE_LINEAGE")
+            self.assertEqual(
+                mapping["canonical_evidence_id_candidates"],
+                ["EVID-11111111-1111-4111-8111-111111111111"],
+            )
+            self.assertEqual(
+                mapping["canonical_predecessor_adjudication_id_candidate"],
+                "ADJ-33333333-3333-4333-8333-333333333333",
+            )
+            self.assertIn("ADJUDICATION_SUBJECT_MAPPING_REQUIRED", entry["blockers"])
+            self.assertIn("ADJUDICATION_DECISION_ENUM_MAPPING_REQUIRED", entry["blockers"])
+            self.assertIn("ADJUDICATION_AUTHORITY_SCOPE_MAPPING_REQUIRED", entry["blockers"])
+            self.assertIn("ADJUDICATION_EVIDENCE_BINDING_REQUIRED", entry["blockers"])
+            self.assertIn("ADJUDICATION_SUPERSESSION_MAPPING_REQUIRED", entry["blockers"])
+            self.assertFalse(entry["promotion_ready"])
+
 
 if __name__ == "__main__":
     unittest.main()
