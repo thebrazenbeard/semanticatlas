@@ -84,8 +84,24 @@ Service-role ACL was moved from V9 to V10. V8 and V9 are postgres-only. V10 rema
 
 A runtime-contract regression query still returned the intended runtime contract as a strict 100%-coverage candidate. The generator-visible validation payload remains `sources[]` only and does not return semantic case IDs, source paths, prompt, gold, category, CEE labels, failure tags, or evaluator metadata.
 
+## Terminal hostile verification
+
+A fresh provider-current terminal pass against V10 produced:
+
+- stale Git SHA: fail closed as required;
+- wildcard object type `*`: fail closed as required;
+- unsupported object type `diagnostic_doc`: fail closed as required;
+- V10 `service_role` execute: true;
+- V9 `service_role` execute: false;
+- V10 `anon` execute: false;
+- V10 `authenticated` execute: false.
+
+Across the 30 frozen holdout prompts with retrieval limit 5, V10 returned 102 candidate rows. All 102 candidate digests were valid lowercase SHA-256 strings, all returned object types were `validation_case`, all used generator projection `SEMANTIC_ATLAS_RUNTIME_SEARCH_GENERATOR_PROJECTION_V2`, and the only top-level key present in every projected validation payload was `sources`.
+
+The post-migration Supabase security advisor added no Semantic Atlas WARN/ERROR findings; existing unrelated or informational findings were unchanged.
+
 ## Interpretation
 
-This is a real positive retrieval result: a small, standard PostgreSQL configuration change selected on the excluded pilot improved the frozen 30-case holdout while also reducing ambiguity and candidate-set size.
+This is a real positive retrieval result: a small, standard PostgreSQL configuration change selected on the excluded pilot improved the frozen 30-case holdout while also reducing ambiguity and candidate-set size, without reopening the already-closed generator metadata leaks or currentness/type-scope failures.
 
 It is still only a retrieval result. The behavioral A/B qualification remains a separate experiment and must not borrow these retrieval percentages as answer-quality evidence.
