@@ -65,6 +65,25 @@ Post-test live counts were re-read as:
 - `runtime_objects = 0`
 - `active_snapshots = 0`
 
+## Real Git-bound rollback pilot
+
+A second rollback-only pilot exercised the complete Git-to-runtime binding path against real repository bytes rather than a purely synthetic manifest.
+
+Exact Git subject:
+
+- commit `33e2c85121814bf90baba85dede920e6f4f17a6b`;
+- path `research/validation/SEMANTIC_ATLAS_SYNTHETIC_PILOT_V0.1.jsonl`;
+- Git blob `469ff57ff8f5b9433a8e4e3424ad71e9ee6142a7`;
+- 12 synthetic validation cases.
+
+The file was freshly fetched from Git at that exact commit. A one-object RESEARCH_STAGING runtime materialization was then constructed from an off-DB canonical payload binding the exact commit, blob, path, and case count. Off-DB pathset, object-stream, payload, and manifest hashes were supplied to the live V4 loader.
+
+The transaction successfully completed:
+
+`start -> append -> seal -> external Git readback confirmation -> activate -> active_runtime_objects readback`
+
+The active derived readback matched the expected exact commit, scope, source path, object ID, and canonical-payload SHA. The transaction was then rolled back, so this proves the real Git-bound state machine without leaving a persistent runtime snapshot or claiming production population.
+
 ## Review state
 
 Masa has been assigned an independent live Supabase reliability/security/root-cause review of this exact successor.
