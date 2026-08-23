@@ -1,0 +1,50 @@
+{
+  "schema_version": "SEMANTIC_ATLAS_RUNTIME_MANIFEST_V3_FIXED_VECTORS_V0.1",
+  "contract": "SEMANTIC_ATLAS_RUNTIME_MANIFEST_V3",
+  "encoding": "UTF-8",
+  "normalization": "NONE",
+  "frame_rule": "decimal UTF-8 octet length + ':' + exact value",
+  "ordering_rule": "raw UTF-8 bytes; source_path primary and object_id secondary for object stream",
+  "vectors": [
+    {
+      "vector_id": "UNICODE_BYTE_ORDER_001",
+      "authority_scope": "RESEARCH_STAGING",
+      "git_commit_sha": "4444444444444444444444444444444444444444",
+      "git_ref": "refs/heads/research/semantic-provenance-lineage",
+      "source_branch": "research/semantic-provenance-lineage",
+      "materialization_version": "hostile-v5-byte-order-v3",
+      "input_path_order": ["Z", "a", "A", "ä", "z", "á"],
+      "expected_utf8_byte_order": ["A", "Z", "a", "z", "á", "ä"],
+      "objects": [
+        {"source_path":"Z","object_id":"OBJ-01","object_type":"test","canonical_payload":"{\"i\":1,\"path\":\"Z\"}","payload_sha256":"e79aa45e7c9ff886fd472ea44ea655323397e001d5160a1f353f6665ae2ef19a"},
+        {"source_path":"a","object_id":"OBJ-02","object_type":"test","canonical_payload":"{\"i\":2,\"path\":\"a\"}","payload_sha256":"28e985e49ea3d1219cba4ab9379268985987853db2bda5cebc9acb6b9682b838"},
+        {"source_path":"A","object_id":"OBJ-03","object_type":"test","canonical_payload":"{\"i\":3,\"path\":\"A\"}","payload_sha256":"267454ceff3a4cd8fbca3e5c433148a4888a966f6364da4bf6e7e69c7fb6ccd9"},
+        {"source_path":"ä","object_id":"OBJ-04","object_type":"test","canonical_payload":"{\"i\":4,\"path\":\"ä\"}","payload_sha256":"403956f2c1f8cb839f5ef0e33745ddf03dd176d89a0f76c76fedee43de149ed0"},
+        {"source_path":"z","object_id":"OBJ-05","object_type":"test","canonical_payload":"{\"i\":5,\"path\":\"z\"}","payload_sha256":"311fac80b7f748d608bb00b46aaea6e3eb601800c6aff9fd718aecf2d50291e7"},
+        {"source_path":"á","object_id":"OBJ-06","object_type":"test","canonical_payload":"{\"i\":6,\"path\":\"á\"}","payload_sha256":"b86e13ada702df6474c1e63de50caf410b3b4de50fe12e549c99e88fa1f9d68b"}
+      ],
+      "expected_pathset_sha256": "532ac7cb6a1d6fd5a881a3810624bce33f6aa5d76973a2b4005dd7b8fbf714e6",
+      "expected_snapshot_sha256": "3eeae8407953ac3ea2c303058c6d92efe276739a0fb62a16a5501c294eff086a",
+      "expected_manifest_sha256": "6393f29f8c670498b29237f11332dc21691e8f61578ab352bbb73b9cc90825f2"
+    },
+    {
+      "vector_id": "REAL_GIT_BOUND_VALIDATION_MANIFEST_001",
+      "authority_scope": "RESEARCH_STAGING",
+      "git_commit_sha": "9774360f9025fd03079cf99cb9b159c0b958518b",
+      "git_ref": "refs/heads/research/semantic-provenance-lineage",
+      "source_branch": "research/semantic-provenance-lineage",
+      "materialization_version": "git-bound-pilot-v0.2-v3",
+      "object": {
+        "source_path": "research/validation/SEMANTIC_ATLAS_SYNTHETIC_PILOT_V0.1.jsonl",
+        "object_id": "VALIDATION-PILOT-V0.1",
+        "object_type": "validation_manifest",
+        "canonical_payload": "{\"case_count\":12,\"git_blob_sha\":\"469ff57ff8f5b9433a8e4e3424ad71e9ee6142a7\",\"git_commit_sha\":\"9774360f9025fd03079cf99cb9b159c0b958518b\",\"source_path\":\"research/validation/SEMANTIC_ATLAS_SYNTHETIC_PILOT_V0.1.jsonl\"}",
+        "payload_sha256": "17458047a29febc91267f4082c694fe262d351a5e5d4a1b0a3b1e58f3d9e830e"
+      },
+      "git_blob_sha": "469ff57ff8f5b9433a8e4e3424ad71e9ee6142a7",
+      "expected_pathset_sha256": "530909524b2dcf9538dd0064defb47b3ae561731f9b4912af2c1901af15c58a3",
+      "expected_snapshot_sha256": "704c35d80ddf5d83f1dd1eb42baf99f606e19f788d04580c1c2483faa1a59f22",
+      "expected_manifest_sha256": "51fe8c3068770dd41dbe4b89d63ede0f6a524e2a796a4e57a0c888ac9781a727"
+    }
+  ]
+}
