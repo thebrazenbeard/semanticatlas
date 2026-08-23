@@ -4,6 +4,10 @@ Status: `MEASURED_RETRIEVAL_RESULT`
 
 This record is intentionally narrow. It measures retrieval behavior only. It does not establish Semantic Atlas behavioral superiority, semantic qualification, autobiographical memory, canon, or release readiness.
 
+## Correction history
+
+The first commit of this result record undercounted deployed V10 Top-1 as 25/30 because the evaluator-side diagnostic re-sorted equal-score opaque results by `candidate_digest`. The deployed function itself deterministically orders equal-score candidates by hidden UTF-8 `object_id` before projecting them to opaque digests. A fresh provider-current rerun mapped each digest back to its sealed object only for evaluation and reproduced the function's actual ordering. The corrected deployed V10 Top-1 is **27/30**, not 25/30. The earlier 25/30 value is superseded, not an alternate metric.
+
 ## Fixed source/runtime cut
 
 - Git repository locator: `github:1342872348`
@@ -40,29 +44,33 @@ V9 holdout retrieval:
 - Top-5: 27/30 = 90.0%
 - Top-10: 28/30 = 93.3%
 - Not in top 10: 2/30
+- `BROAD_AMBIGUOUS`: 8/30
+- Mean candidate count: 14.03
+- Mean top-coverage tie count: 1.93
 
 The live V10 successor changes only the PostgreSQL text-search configuration/ranking lexemes from `simple` to `english` while preserving the provider-current read gate, explicit object-type scope, evidence-only indexing, opaque candidate digest, safe projected payload, pre-limit ambiguity statistics, deterministic ordering, and V9 generator projection shape.
 
-Actual deployed V10 holdout retrieval:
+Actual deployed V10 holdout retrieval, using the function's real hidden-object deterministic tie order:
 
-- Top-1: 25/30 = 83.3%
+- Top-1: 27/30 = 90.0%
 - Top-3: 29/30 = 96.7%
 - Top-5: 29/30 = 96.7%
 - Top-10: 29/30 = 96.7%
 - Not in top 10: 1/30
+- `BROAD_AMBIGUOUS`: 4/30
+- Mean candidate count: 4.63
+- Mean top-coverage tie count: 1.30
 
-The broad-only predeployment simulation had estimated 27/30 Top-1. That estimate is retired as a hypothesis, not reported as deployed performance, because the live route retains strict-first behavior. The deployed function's measured result is 25/30 Top-1.
+Thus V10 improved Top-1 by 10 percentage points, Top-3 by 10 points, Top-5 by 6.7 points, Top-10 by 3.4 points, halved broad-ambiguity incidence, and reduced the mean candidate set substantially on this frozen retrieval holdout.
 
 ## Remaining V10 misses
 
 The intended case is rank 2 for:
 
-- `SYN-IDENTITY-OVERSPLIT-001`
-- `SYN-PRIVACY-001`
-- `SYN-REPO-IDENTITY-001`
-- `SYN-SOURCE-LINEAGE-001`
+- `SYN-IDENTITY-OVERSPLIT-001` — broad ambiguous, five candidates tied at top coverage.
+- `SYN-SOURCE-LINEAGE-001` — broad ambiguous, four candidates tied at top coverage.
 
-`SYN-UNRESOLVED-001` remains absent from the first 10 candidates.
+`SYN-UNRESOLVED-001` remains absent from the first 10 candidates. Its two evidence sources contain only competing candidate values (`Use SHA-256.` / `Use BLAKE3.`) while the query asks which checksum algorithm is authoritative for archive verification, so the evidence itself contains essentially none of the query's authority/archive/verification vocabulary. This is an exposed lexical-retrieval limitation, not grounds to alter the frozen case.
 
 These cases are now exposed evaluation material. They must not be silently rewritten, relabeled, or used as a fresh unseen holdout for another tuned successor.
 
@@ -78,6 +86,6 @@ A runtime-contract regression query still returned the intended runtime contract
 
 ## Interpretation
 
-This is a real positive retrieval result: a small, standard PostgreSQL configuration change selected on the excluded pilot improved the frozen 30-case holdout at Top-1, Top-3, Top-5, Top-10, and no-hit rate.
+This is a real positive retrieval result: a small, standard PostgreSQL configuration change selected on the excluded pilot improved the frozen 30-case holdout while also reducing ambiguity and candidate-set size.
 
 It is still only a retrieval result. The behavioral A/B qualification remains a separate experiment and must not borrow these retrieval percentages as answer-quality evidence.
