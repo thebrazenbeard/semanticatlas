@@ -46,10 +46,9 @@ as $$
     case
       when r.object_type = 'semantic_index' then
         r.projected_payload || jsonb_build_object(
-          'promotion_status', coalesce(
-            r.projected_payload -> 'promotion_status',
-            to_jsonb('UNSPECIFIED'::text)
-          ),
+          -- V11 intentionally exposes no source-level semantic-index promotion
+          -- field, so V12 must report that state as unknown rather than infer it.
+          'promotion_status', 'UNSPECIFIED',
           'retrieval_authority_effect', 'NONE_BY_RETRIEVAL'
         )
       when r.object_type = 'working_memory' then
