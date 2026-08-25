@@ -3,8 +3,8 @@
 --
 -- Purpose:
 -- Preserve the V11 retrieval/ranking/currentness behavior while making the
--- generator-visible authority boundary explicit for working-project memory
--- projections. Retrieval never grants semantic authority or canonical status.
+-- generator-visible retrieval-authority boundary explicit for every V4 result.
+-- Retrieval never grants semantic authority or canonical status.
 --
 -- V11 remains untouched so the frozen V0.5 empirical protocol can continue to
 -- bind exactly to search_current_runtime_objects_v11 / PROJECTION_V3.
@@ -45,17 +45,16 @@ as $$
     r.object_type,
     case
       when r.object_type = 'semantic_index' then
-        r.projected_payload || jsonb_build_object(
+        coalesce(r.projected_payload, '{}'::jsonb) || jsonb_build_object(
           -- V11 intentionally exposes no source-level semantic-index promotion
           -- field, so V12 must report that state as unknown rather than infer it.
           'promotion_status', 'UNSPECIFIED',
           'retrieval_authority_effect', 'NONE_BY_RETRIEVAL'
         )
-      when r.object_type = 'working_memory' then
-        r.projected_payload || jsonb_build_object(
+      else
+        coalesce(r.projected_payload, '{}'::jsonb) || jsonb_build_object(
           'retrieval_authority_effect', 'NONE_BY_RETRIEVAL'
         )
-      else r.projected_payload
     end as projected_payload,
     r.rank,
     r.match_mode,
