@@ -1,0 +1,45 @@
+{
+  "schema_version": "SEMANTIC_ATLAS_EMPIRICAL_EXECUTION_BINDING_V0.7",
+  "status": "FROZEN_EXECUTION_ROOT_CANDIDATE",
+  "execution_target": "research/validation/validate_empirical_holdout_v0_5.py",
+  "artifacts": [
+    {
+      "path": "research/validation/run_empirical_holdout_v0_7.py",
+      "git_blob_sha1": "e18c41499bd7e9e68fc9d4ae15304e71a72cac7b"
+    },
+    {
+      "path": "research/validation/validate_empirical_holdout_v0_5.py",
+      "git_blob_sha1": "05fe64eb0ea9665f360e9afc13dcaf1cc3e20303"
+    },
+    {
+      "path": "research/validation/validate_empirical_holdout_v0_3.py",
+      "git_blob_sha1": "047e5c10a86e0ac58efba92a59d5f4278af6bd50"
+    },
+    {
+      "path": "research/validation/SEMANTIC_ATLAS_EMPIRICAL_INTEGRITY_MANIFEST_V0.5.json",
+      "git_blob_sha1": "813444aedad50af6f9767ded458403d49f1a9a78"
+    },
+    {
+      "path": "research/validation/SEMANTIC_ATLAS_EMPIRICAL_GENERATION_RECORD_SCHEMA_V0.5.json",
+      "git_blob_sha1": "066ff6be1020583b6f912d7118ef27f47d7cfdb0"
+    },
+    {
+      "path": "research/validation/SEMANTIC_ATLAS_EMPIRICAL_SCORE_RECORD_SCHEMA_V0.5.json",
+      "git_blob_sha1": "4f983f6e15e6301292fd4c4625973a893fc62979"
+    },
+    {
+      "path": "research/validation/SEMANTIC_ATLAS_EMPIRICAL_PAIRWISE_JUDGMENT_SCHEMA_V0.5.json",
+      "git_blob_sha1": "a3b06dc08c56a92dfb6d80e4908af5fef2163308"
+    }
+  ],
+  "required_paths": [
+    "research/validation/run_empirical_holdout_v0_7.py",
+    "research/validation/validate_empirical_holdout_v0_5.py",
+    "research/validation/validate_empirical_holdout_v0_3.py",
+    "research/validation/SEMANTIC_ATLAS_EMPIRICAL_INTEGRITY_MANIFEST_V0.5.json",
+    "research/validation/SEMANTIC_ATLAS_EMPIRICAL_GENERATION_RECORD_SCHEMA_V0.5.json",
+    "research/validation/SEMANTIC_ATLAS_EMPIRICAL_SCORE_RECORD_SCHEMA_V0.5.json",
+    "research/validation/SEMANTIC_ATLAS_EMPIRICAL_PAIRWISE_JUDGMENT_SCHEMA_V0.5.json"
+  ],
+  "notes": "Execution binding only. Does not change frozen cases, holdout/pilot partition, assignment, presentation, thresholds, retrieval treatment, generation packets, scores, pairwise judgments, or qualification result. The final Git commit containing this binding is the external project trust root for this candidate execution layer."
+}
