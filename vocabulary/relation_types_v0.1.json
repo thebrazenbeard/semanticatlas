@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.1",
+  "vocabulary": "SEMANTIC_ATLAS_RELATION_TYPES_V0.1",
+  "authority": "VERA_SEMANTIC_ADJUDICATION_GITHUB_ISSUE_1",
+  "relation_types": [
+    {"schema_version":"0.1","object_type":"relation_type","id":"RTYPE-c059bda0-751d-50fe-844f-9bd8f38ecfcb","code":"SUPERSEDES","family":"LIFECYCLE_LINEAGE","description":"Later concept or state replaces an earlier one for the proposition's explicit scope.","symmetry":"ASYMMETRIC","transitivity":"UNKNOWN","current_canon_eligible":true},
+    {"schema_version":"0.1","object_type":"relation_type","id":"RTYPE-d9f59591-d892-58ca-8968-459c2d8cf832","code":"REFINES","family":"LIFECYCLE_LINEAGE","description":"Later concept or state narrows, clarifies, or improves an earlier one without claiming identity.","symmetry":"ASYMMETRIC","transitivity":"UNKNOWN","current_canon_eligible":true},
+    {"schema_version":"0.1","object_type":"relation_type","id":"RTYPE-fe60fa6e-c3cb-555d-b6e6-54031a4f66f9","code":"RETRACTS","family":"LIFECYCLE_LINEAGE","description":"An assertion or definition is explicitly withdrawn.","symmetry":"ASYMMETRIC","transitivity":"INTRANSITIVE","current_canon_eligible":true},
+    {"schema_version":"0.1","object_type":"relation_type","id":"RTYPE-9f2af9bd-141a-575f-a00e-f43329086fe4","code":"EVOLVED_FROM","family":"LIFECYCLE_LINEAGE","description":"Concept identity is discontinuous but has a defensible developmental lineage from another concept.","symmetry":"ASYMMETRIC","transitivity":"UNKNOWN","current_canon_eligible":true},
+    {"schema_version":"0.1","object_type":"relation_type","id":"RTYPE-3c9bf99d-f528-53b4-9b31-1211a8aeb2d3","code":"SUPPORTS","family":"EPISTEMIC","description":"Evidence or proposition provides positive support for another proposition.","symmetry":"ASYMMETRIC","transitivity":"UNKNOWN","current_canon_eligible":true},
+    {"schema_version":"0.1","object_type":"relation_type","id":"RTYPE-2085e374-3978-55db-a295-87ccfc5308d6","code":"CONTRADICTS","family":"EPISTEMIC","description":"Evidence or proposition materially conflicts with another proposition.","symmetry":"SYMMETRIC","transitivity":"UNKNOWN","current_canon_eligible":true},
+    {"schema_version":"0.1","object_type":"relation_type","id":"RTYPE-e4544c1b-617f-54aa-b09e-edfdf58620c4","code":"EQUIVALENT_TO","family":"IDENTITY_EQUIVALENCE","description":"Strict semantic equivalence under the proposition's explicit scope.","symmetry":"SYMMETRIC","transitivity":"TRANSITIVE","current_canon_eligible":true},
+    {"schema_version":"0.1","object_type":"relation_type","id":"RTYPE-76e72293-5c8e-5857-8d85-6ca67426be7f","code":"DISTINCT_FROM","family":"IDENTITY_EQUIVALENCE","description":"Subjects are explicitly non-identical or non-equivalent under the proposition's scope.","symmetry":"SYMMETRIC","transitivity":"UNKNOWN","current_canon_eligible":true},
+    {"schema_version":"0.1","object_type":"relation_type","id":"RTYPE-e4e319fa-ccf5-5b8e-92a1-42d729fc644c","code":"RELATED_NOT_EQUIVALENT","family":"IDENTITY_EQUIVALENCE","description":"Subjects are related while equivalence is explicitly denied.","symmetry":"SYMMETRIC","transitivity":"UNKNOWN","current_canon_eligible":true},
+    {"schema_version":"0.1","object_type":"relation_type","id":"RTYPE-6f264bfd-a8a4-5108-979d-7b69cf289485","code":"DERIVED_FROM","family":"PROVENANCE_HISTORY","description":"Object or concept is derivationally downstream from another identified object or source.","symmetry":"ASYMMETRIC","transitivity":"UNKNOWN","current_canon_eligible":true},
+    {"schema_version":"0.1","object_type":"relation_type","id":"RTYPE-b70c21cb-b07c-5788-858b-51f4c79fd56e","code":"HISTORICAL_RESONANCE_WITH","family":"PROVENANCE_HISTORY","description":"Historical similarity or resonance is asserted without identity or equivalence.","symmetry":"SYMMETRIC","transitivity":"UNKNOWN","current_canon_eligible":true}
+  ],
+  "intentionally_not_frozen": ["CAN_ENABLE","PRESERVES","DOES_NOT_IMPLY","REQUIRES","RELATED_TO"]
+}
