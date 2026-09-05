@@ -1,0 +1,73 @@
+{
+  "schema_version": "SEMANTIC_ATLAS_RUNTIME_MANIFEST_V4_FIXED_VECTORS_V0.1",
+  "contract": "SEMANTIC_ATLAS_RUNTIME_MANIFEST_V4",
+  "encoding": "UTF-8",
+  "normalization": "NONE",
+  "repository_locator_rule": "provider:stable-repository-id",
+  "frame_rule": "decimal UTF-8 octet length + ':' + exact value",
+  "ordering_rule": "raw UTF-8 bytes; source_path primary and object_id secondary for object stream",
+  "vectors": [
+    {
+      "vector_id": "UNICODE_BYTE_ORDER_REPOSITORY_BOUND_001",
+      "authority_scope": "RESEARCH_STAGING",
+      "git_repository_locator": "github:1342872348",
+      "git_commit_sha": "4444444444444444444444444444444444444444",
+      "git_ref": "refs/heads/research/semantic-provenance-lineage",
+      "source_branch": "research/semantic-provenance-lineage",
+      "materialization_version": "hostile-v6-byte-order-v4",
+      "input_path_order": ["Z", "a", "A", "ä", "z", "á"],
+      "expected_utf8_byte_order": ["A", "Z", "a", "z", "á", "ä"],
+      "objects": [
+        {"source_path":"Z","object_id":"OBJ-01","object_type":"test","canonical_payload":"{\"i\":1,\"path\":\"Z\"}","payload_sha256":"e79aa45e7c9ff886fd472ea44ea655323397e001d5160a1f353f6665ae2ef19a"},
+        {"source_path":"a","object_id":"OBJ-02","object_type":"test","canonical_payload":"{\"i\":2,\"path\":\"a\"}","payload_sha256":"28e985e49ea3d1219cba4ab9379268985987853db2bda5cebc9acb6b9682b838"},
+        {"source_path":"A","object_id":"OBJ-03","object_type":"test","canonical_payload":"{\"i\":3,\"path\":\"A\"}","payload_sha256":"267454ceff3a4cd8fbca3e5c433148a4888a966f6364da4bf6e7e69c7fb6ccd9"},
+        {"source_path":"ä","object_id":"OBJ-04","object_type":"test","canonical_payload":"{\"i\":4,\"path\":\"ä\"}","payload_sha256":"403956f2c1f8cb839f5ef0e33745ddf03dd176d89a0f76c76fedee43de149ed0"},
+        {"source_path":"z","object_id":"OBJ-05","object_type":"test","canonical_payload":"{\"i\":5,\"path\":\"z\"}","payload_sha256":"311fac80b7f748d608bb00b46aaea6e3eb601800c6aff9fd718aecf2d50291e7"},
+        {"source_path":"á","object_id":"OBJ-06","object_type":"test","canonical_payload":"{\"i\":6,\"path\":\"á\"}","payload_sha256":"b86e13ada702df6474c1e63de50caf410b3b4de50fe12e549c99e88fa1f9d68b"}
+      ],
+      "expected_pathset_sha256": "532ac7cb6a1d6fd5a881a3810624bce33f6aa5d76973a2b4005dd7b8fbf714e6",
+      "expected_snapshot_sha256": "3eeae8407953ac3ea2c303058c6d92efe276739a0fb62a16a5501c294eff086a",
+      "expected_manifest_sha256": "6b94c71cbf9d0a09b7b07489529de5e43a1dd2d60805b66ffabbac69e8aba391"
+    },
+    {
+      "vector_id": "REAL_GIT_BOUND_REPOSITORY_IDENTITY_001",
+      "authority_scope": "RESEARCH_STAGING",
+      "git_repository_locator": "github:1342872348",
+      "git_commit_sha": "b012b1370f334add3032e66992730f5528fb9bda",
+      "git_ref": "refs/heads/research/semantic-provenance-lineage",
+      "source_branch": "research/semantic-provenance-lineage",
+      "materialization_version": "git-bound-pilot-v0.3-v4",
+      "object": {
+        "source_path": "research/validation/SEMANTIC_ATLAS_SYNTHETIC_PILOT_V0.1.jsonl",
+        "object_id": "VALIDATION-PILOT-V0.1",
+        "object_type": "validation_manifest",
+        "canonical_payload": "{\"case_count\":12,\"git_blob_sha\":\"469ff57ff8f5b9433a8e4e3424ad71e9ee6142a7\",\"git_commit_sha\":\"b012b1370f334add3032e66992730f5528fb9bda\",\"git_repository_locator\":\"github:1342872348\",\"source_path\":\"research/validation/SEMANTIC_ATLAS_SYNTHETIC_PILOT_V0.1.jsonl\"}",
+        "payload_sha256": "dc450b9581379fff7401978ab043e44f1d13a3e118d95961086f7b47fcfbacbd"
+      },
+      "git_blob_sha": "469ff57ff8f5b9433a8e4e3424ad71e9ee6142a7",
+      "expected_pathset_sha256": "530909524b2dcf9538dd0064defb47b3ae561731f9b4912af2c1901af15c58a3",
+      "expected_snapshot_sha256": "4504dc17acc500fa4604916010f6e975d4d7354ead695b5b357aed726a5637d7",
+      "expected_manifest_sha256": "f73ac5c94174153b0e05478803a8dfbfc5e94d6f3ce2ca786646c9be1f0af01c"
+    },
+    {
+      "vector_id": "REPOSITORY_IDENTITY_SENSITIVITY_001",
+      "authority_scope": "RESEARCH_STAGING",
+      "git_repository_locator": "github:9999999999",
+      "git_commit_sha": "b012b1370f334add3032e66992730f5528fb9bda",
+      "git_ref": "refs/heads/research/semantic-provenance-lineage",
+      "source_branch": "research/semantic-provenance-lineage",
+      "materialization_version": "git-bound-pilot-v0.3-v4",
+      "object": {
+        "source_path": "research/validation/SEMANTIC_ATLAS_SYNTHETIC_PILOT_V0.1.jsonl",
+        "object_id": "VALIDATION-PILOT-V0.1",
+        "object_type": "validation_manifest",
+        "canonical_payload": "{\"case_count\":12,\"git_blob_sha\":\"469ff57ff8f5b9433a8e4e3424ad71e9ee6142a7\",\"git_commit_sha\":\"b012b1370f334add3032e66992730f5528fb9bda\",\"git_repository_locator\":\"github:1342872348\",\"source_path\":\"research/validation/SEMANTIC_ATLAS_SYNTHETIC_PILOT_V0.1.jsonl\"}",
+        "payload_sha256": "dc450b9581379fff7401978ab043e44f1d13a3e118d95961086f7b47fcfbacbd"
+      },
+      "expected_pathset_sha256": "530909524b2dcf9538dd0064defb47b3ae561731f9b4912af2c1901af15c58a3",
+      "expected_snapshot_sha256": "4504dc17acc500fa4604916010f6e975d4d7354ead695b5b357aed726a5637d7",
+      "expected_manifest_sha256": "3652a2a49b44b268d27833b4f87cc1be3a413c55b5e6ae0c5def6e674b11c374",
+      "must_differ_from_manifest_vector_id": "REAL_GIT_BOUND_REPOSITORY_IDENTITY_001"
+    }
+  ]
+}

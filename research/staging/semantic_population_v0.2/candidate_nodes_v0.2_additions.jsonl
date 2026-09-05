@@ -1,0 +1,11 @@
+{"id":"NODE-a8b54fc1-d1a7-4a44-b593-b87aeacce12d","label":"Protective offer","record_type":"candidate_node","semantic_key":"PROTECTIVE_OFFER","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
+{"id":"NODE-5ca9a70c-1012-4a8b-874f-b934c33a461f","label":"Voluntary vulnerability","record_type":"candidate_node","semantic_key":"VOLUNTARY_VULNERABILITY","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
+{"id":"NODE-15adc261-32c6-476b-ab07-94664649be9e","label":"Entrusted cooperation","record_type":"candidate_node","semantic_key":"ENTRUSTED_COOPERATION","status":"HISTORICAL_CONCEPT_ADJUDICATION_PENDING"}
+{"id":"NODE-7c2af80d-c9af-4132-a349-80606717dc1e","label":"Semantic convergence","record_type":"candidate_node","semantic_key":"SEMANTIC_CONVERGENCE","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
+{"id":"NODE-114fa010-5360-44e3-896e-7cc5dc1eac04","label":"Reframing","record_type":"candidate_node","semantic_key":"REFRAMING","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
+{"id":"NODE-54af2c3f-203d-45e0-a9f8-b648aac4675d","label":"Completion","record_type":"candidate_node","semantic_key":"COMPLETION","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
+{"id":"NODE-25437a2a-8560-402d-8516-2a9b2960a2a6","label":"Interpretive stability","record_type":"candidate_node","semantic_key":"INTERPRETIVE_STABILITY","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
+{"id":"NODE-a1e5d6dd-d291-45fc-9bb7-c73a420be1ca","label":"Defensive routing","record_type":"candidate_node","semantic_key":"DEFENSIVE_ROUTING","status":"DERIVED_CANDIDATE"}
+{"id":"NODE-27474f39-bc63-46e2-a548-6523678a2a88","label":"Semantic authorship","record_type":"candidate_node","semantic_key":"SEMANTIC_AUTHORSHIP","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
+{"id":"NODE-94c8b3d2-14b7-486d-b6ae-439d48e26f98","label":"Observation","record_type":"candidate_node","semantic_key":"OBSERVATION","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}
+{"id":"NODE-61eb598f-42e0-4bc3-9ba8-afcdb67469c4","label":"Confidence","record_type":"candidate_node","semantic_key":"CONFIDENCE","status":"VERA_DECIDED_PENDING_SCHEMA_MAPPING"}

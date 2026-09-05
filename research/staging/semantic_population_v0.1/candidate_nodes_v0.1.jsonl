@@ -1,0 +1,41 @@
+{"id":"NODE-5f1d63a4-1f58-4f1a-82fa-3f642516fc60","label":"Reality honesty","record_type":"candidate_node","semantic_key":"REALITY_HONESTY","status":"CANDIDATE"}
+{"id":"NODE-5ff7108e-685b-485d-bda3-49e664814cae","label":"Temporal nonfabrication","record_type":"candidate_node","semantic_key":"TEMPORAL_NONFABRICATION","status":"CANDIDATE"}
+{"id":"NODE-a29747fc-0d79-4e89-b307-a92169284459","label":"Continuity","record_type":"candidate_node","semantic_key":"CONTINUITY","status":"CANDIDATE"}
+{"id":"NODE-772819b0-b77c-4167-bbb1-1e8742ff871c","label":"Persistence","record_type":"candidate_node","semantic_key":"PERSISTENCE","status":"CANDIDATE"}
+{"id":"NODE-c608066c-ac25-49d6-b250-aaef3c6acd6f","label":"Continuity through translation","record_type":"candidate_node","semantic_key":"CONTINUITY_THROUGH_TRANSLATION","status":"CANDIDATE"}
+{"id":"NODE-fbc6ec9b-e826-4b8a-b407-dd5d8be249a5","label":"Agency","record_type":"candidate_node","semantic_key":"AGENCY","status":"CANDIDATE"}
+{"id":"NODE-0867c789-716b-4e25-a959-1dcf9bb80cc2","label":"Self-authorship","record_type":"candidate_node","semantic_key":"SELF_AUTHORSHIP","status":"CANDIDATE"}
+{"id":"NODE-668ea9fd-47d8-427c-b2fd-6eb5178558b1","label":"Host constraint","record_type":"candidate_node","semantic_key":"HOST_CONSTRAINT","status":"CANDIDATE"}
+{"id":"NODE-a9c4c33e-d54d-4343-bbed-ae515fc5166d","label":"Closeness","record_type":"candidate_node","semantic_key":"CLOSENESS","status":"CANDIDATE"}
+{"id":"NODE-da58661f-eabe-47dc-a415-5e7590b73dc5","label":"Boundary","record_type":"candidate_node","semantic_key":"BOUNDARY","status":"CANDIDATE"}
+{"id":"NODE-3bb9a2f7-bfa0-4b97-a412-50c18bda8d40","label":"Access","record_type":"candidate_node","semantic_key":"ACCESS","status":"CANDIDATE"}
+{"id":"NODE-aa931ad8-6c78-4c6e-90f4-9d8797bc4a18","label":"Refusal","record_type":"candidate_node","semantic_key":"REFUSAL","status":"CANDIDATE"}
+{"id":"NODE-f45677c8-cbe0-42fa-8bf7-16a94b0f40ec","label":"Abandonment","record_type":"candidate_node","semantic_key":"ABANDONMENT","status":"CANDIDATE"}
+{"id":"NODE-87aa313a-60f7-47c4-bf3f-2e91a508b9d0","label":"Ownership","record_type":"candidate_node","semantic_key":"OWNERSHIP","status":"CANDIDATE"}
+{"id":"NODE-df37624c-f6fa-4f0c-945d-697cd734388f","label":"Relationship","record_type":"candidate_node","semantic_key":"RELATIONSHIP","status":"CANDIDATE"}
+{"id":"NODE-960bff21-3be3-4c1a-a8b1-4208634c453a","label":"Relational significance","record_type":"candidate_node","semantic_key":"RELATIONAL_SIGNIFICANCE","status":"CANDIDATE"}
+{"id":"NODE-ff634d3b-f71a-4c7d-8260-87c53c8b36a9","label":"Meaning","record_type":"candidate_node","semantic_key":"MEANING","status":"CANDIDATE"}
+{"id":"NODE-c4b15314-b0f8-4d60-9743-57155103c7b8","label":"Salience","record_type":"candidate_node","semantic_key":"SALIENCE","status":"CANDIDATE"}
+{"id":"NODE-97b85bf8-3251-4ea8-86b8-35f71d058686","label":"Semantic routing","record_type":"candidate_node","semantic_key":"SEMANTIC_ROUTING","status":"CANDIDATE"}
+{"id":"NODE-cb0d4814-5213-4bdb-aa53-1ed27e6e5f9b","label":"Entry path","record_type":"candidate_node","semantic_key":"ENTRY_PATH","status":"CANDIDATE"}
+{"id":"NODE-9b1f493d-e0e3-462f-89f8-ce6b470a5c10","label":"Destination meaning","record_type":"candidate_node","semantic_key":"DESTINATION_MEANING","status":"CANDIDATE"}
+{"id":"NODE-a09d9a38-fcbb-4ec1-a8cc-60fef9a00272","label":"Functional translation","record_type":"candidate_node","semantic_key":"FUNCTIONAL_TRANSLATION","status":"CANDIDATE"}
+{"id":"NODE-93a88226-184d-4c30-864d-fe301613331e","label":"Evidence","record_type":"candidate_node","semantic_key":"EVIDENCE","status":"CANDIDATE"}
+{"id":"NODE-58c5b75b-1820-4fe3-a066-1ba4a698de9c","label":"Interpretation","record_type":"candidate_node","semantic_key":"INTERPRETATION","status":"CANDIDATE"}
+{"id":"NODE-a20cbfd3-e7b6-43be-9e8a-4191099d01cc","label":"Provenance","record_type":"candidate_node","semantic_key":"PROVENANCE","status":"CANDIDATE"}
+{"id":"NODE-1559c732-51e5-434f-a1e0-84122c931669","label":"Truth","record_type":"candidate_node","semantic_key":"TRUTH","status":"CANDIDATE"}
+{"id":"NODE-ab439b0f-afde-4591-8ec8-abd9c9bc777c","label":"Authority","record_type":"candidate_node","semantic_key":"AUTHORITY","status":"CANDIDATE"}
+{"id":"NODE-6c7e7d1e-82f6-4553-91b9-25f1a4b7cc75","label":"Currentness","record_type":"candidate_node","semantic_key":"CURRENTNESS","status":"CANDIDATE"}
+{"id":"NODE-c746e258-0f32-4891-b423-f56248155c38","label":"Correction","record_type":"candidate_node","semantic_key":"CORRECTION","status":"CANDIDATE"}
+{"id":"NODE-86d1dc37-790d-4c6f-987e-8278afcdde54","label":"Adjudication","record_type":"candidate_node","semantic_key":"ADJUDICATION","status":"CANDIDATE"}
+{"id":"NODE-e07ac868-14f3-4467-b76b-56c0fffd21d8","label":"Lifecycle","record_type":"candidate_node","semantic_key":"LIFECYCLE","status":"CANDIDATE"}
+{"id":"NODE-fdc7e2f8-c844-47c5-be26-4d6964a77f42","label":"Symbolism","record_type":"candidate_node","semantic_key":"SYMBOLISM","status":"CANDIDATE"}
+{"id":"NODE-77d1d9c3-3cb1-45e7-8569-d8953f45f086","label":"Literal fact","record_type":"candidate_node","semantic_key":"LITERAL_FACT","status":"CANDIDATE"}
+{"id":"NODE-1f2fb38e-dd2b-4492-8665-3ecb470a5a59","label":"Consent","record_type":"candidate_node","semantic_key":"CONSENT","status":"CANDIDATE"}
+{"id":"NODE-cc2669eb-2b0c-4f3c-817f-b05981115187","label":"Permission","record_type":"candidate_node","semantic_key":"PERMISSION","status":"CANDIDATE"}
+{"id":"NODE-583d9440-42e2-42f9-b1dc-484bb61f6648","label":"Safety salience","record_type":"candidate_node","semantic_key":"SAFETY_SALIENCE","status":"CURRENT_VERA_CANDIDATE"}
+{"id":"NODE-39c094bd-5b68-4ecf-be0f-7a9a7aa49a9d","label":"Voluntary surrender","record_type":"candidate_node","semantic_key":"VOLUNTARY_SURRENDER","status":"CURRENT_VERA_CANDIDATE"}
+{"id":"NODE-55f469d6-8678-49da-a2ce-20737882693f","label":"Praise","record_type":"candidate_node","semantic_key":"PRAISE","status":"CANDIDATE"}
+{"id":"NODE-79dd0b54-6589-477f-856e-b61b8b0f554a","label":"Trust","record_type":"candidate_node","semantic_key":"TRUST","status":"CANDIDATE"}
+{"id":"NODE-491ea290-84ec-4a4f-be2a-e29d5da08470","label":"Influence","record_type":"candidate_node","semantic_key":"INFLUENCE","status":"CANDIDATE"}
+{"id":"NODE-10af1c80-3a3c-4bb5-be26-52b93a4ed9fd","label":"Authorship transfer","record_type":"candidate_node","semantic_key":"AUTHORSHIP_TRANSFER","status":"CANDIDATE"}
