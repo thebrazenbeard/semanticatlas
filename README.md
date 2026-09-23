@@ -1,3 +1,5 @@
+> **License:** Source-visible, not open source. Original material is proprietary. Commercial use, redistribution, hosted-service use, and commercial derivative products require written permission. See [LICENSE](LICENSE) and [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md). Separately identified third-party components retain their own licenses.
+
 # Semantic Atlas
 
 Semantic Atlas is a provenance-aware project for mapping semantic concepts, distinctions, relations, interpretations, and their evidentiary lineage.
