@@ -27,6 +27,15 @@ def load_objects(root: Path):
             if obj["id"] in objects:
                 raise ValueError(f"duplicate canonical object id {obj['id']} at {path}")
             objects[obj["id"]] = obj
+
+    # Canonical validation treats vocabulary relation types as first-class
+    # reference targets. The direct derived builder must use the same domain.
+    vocabulary = root / "vocabulary" / "relation_types_v0.1.json"
+    if vocabulary.exists():
+        for obj in json.loads(vocabulary.read_text(encoding="utf-8")).get("relation_types", []):
+            if obj["id"] in objects:
+                raise ValueError(f"duplicate canonical object id {obj['id']} in {vocabulary}")
+            objects[obj["id"]] = obj
     return objects
 
 
@@ -85,7 +94,10 @@ def build(root: Path, outdir: Path):
     objects = load_objects(root)
     active = active_adjudications(objects)
     subject_ids = sorted({item["subject_id"] for item in active})
-    subjects = [objects[item] for item in subject_ids if item in objects]
+    missing = sorted(set(subject_ids) - set(objects))
+    if missing:
+        raise ValueError(f"unresolved active adjudication subject: {missing}")
+    subjects = [objects[item] for item in subject_ids]
     propositions = [
         item for item in subjects if item.get("object_type") == "proposition"
     ]
