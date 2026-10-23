@@ -24,6 +24,8 @@ def load_objects(root: Path):
             continue
         for path in sorted(directory.rglob("*.json")):
             obj = json.loads(path.read_text(encoding="utf-8"))
+            if obj["id"] in objects:
+                raise ValueError(f"duplicate canonical object id {obj['id']} at {path}")
             objects[obj["id"]] = obj
     return objects
 
