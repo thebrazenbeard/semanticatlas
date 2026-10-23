@@ -33,6 +33,16 @@ def active_adjudications(objects):
         object_id: obj for object_id, obj in objects.items()
         if obj.get("object_type") == "adjudication"
     }
+    # An adjudication's supersession chain must stay within its subject.
+    # Cross-subject lineage belongs in explicit semantic propositions, not
+    # an unrelated decision's authority-revocation chain.
+    for adjudication in adjudications.values():
+        for older_id in adjudication.get("supersedes_adjudication_ids", []):
+            older = adjudications.get(older_id)
+            if older is not None and older.get("subject_id") != adjudication.get("subject_id"):
+                raise ValueError(
+                    f"cross-subject adjudication supersession {adjudication['id']} -> {older_id}"
+                )
     superseded_ids = {
         older_id
         for adjudication in adjudications.values()
