@@ -4,7 +4,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sqlite3
+import tempfile
 from pathlib import Path
 
 CANON_DIRS = (
@@ -117,55 +119,64 @@ def build(root: Path, outdir: Path):
     }
 
     outdir.mkdir(parents=True, exist_ok=True)
-    current_view = outdir / "current_view.json"
-    current_view.write_bytes(canonical_json_bytes(view))
+    # Construct off-path: a failed materialization cannot first replace
+    # previously published derived artifacts.
+    with tempfile.TemporaryDirectory(prefix=".semanticatlas-build-", dir=outdir) as stage_name:
+        staging = Path(stage_name)
+        current_view = staging / "current_view.json"
+        current_view.write_bytes(canonical_json_bytes(view))
 
-    database = outdir / "semantic_index.sqlite"
-    if database.exists():
-        database.unlink()
-    connection = sqlite3.connect(database)
-    connection.execute("PRAGMA journal_mode=DELETE")
-    connection.execute("PRAGMA synchronous=OFF")
-    connection.executescript(
-        """
-        CREATE TABLE meta(key TEXT PRIMARY KEY, value TEXT NOT NULL);
-        CREATE TABLE current_subject(id TEXT PRIMARY KEY, object_type TEXT NOT NULL, json TEXT NOT NULL);
-        CREATE TABLE graph_edge(proposition_id TEXT PRIMARY KEY, subject_id TEXT NOT NULL, predicate_code TEXT NOT NULL, object_id TEXT NOT NULL);
-        """
-    )
-    connection.execute(
-        "INSERT INTO meta VALUES(?, ?)",
-        ("schema_version", "0.1"),
-    )
-    connection.execute(
-        "INSERT INTO meta VALUES(?, ?)",
-        ("authority", "NONE_DERIVED_FROM_ACTIVE_EXPLICIT_ADJUDICATION_CHAIN"),
-    )
-    for obj in sorted(subjects, key=lambda item: item["id"]):
-        connection.execute(
-            "INSERT INTO current_subject VALUES(?, ?, ?)",
-            (
-                obj["id"], obj["object_type"],
-                json.dumps(obj, sort_keys=True, separators=(",", ":")),
-            ),
+        database = staging / "semantic_index.sqlite"
+        if database.exists():
+            database.unlink()
+        connection = sqlite3.connect(database)
+        connection.execute("PRAGMA journal_mode=DELETE")
+        connection.execute("PRAGMA synchronous=OFF")
+        connection.executescript(
+            """
+            CREATE TABLE meta(key TEXT PRIMARY KEY, value TEXT NOT NULL);
+            CREATE TABLE current_subject(id TEXT PRIMARY KEY, object_type TEXT NOT NULL, json TEXT NOT NULL);
+            CREATE TABLE graph_edge(proposition_id TEXT PRIMARY KEY, subject_id TEXT NOT NULL, predicate_code TEXT NOT NULL, object_id TEXT NOT NULL);
+            """
         )
-    for edge in graph_edges:
         connection.execute(
-            "INSERT INTO graph_edge VALUES(?, ?, ?, ?)",
-            (
-                edge["proposition_id"], edge["subject_id"],
-                edge["predicate_code"], edge["object_id"],
-            ),
+            "INSERT INTO meta VALUES(?, ?)",
+            ("schema_version", "0.1"),
         )
-    connection.commit()
-    connection.execute("VACUUM")
-    connection.close()
+        connection.execute(
+            "INSERT INTO meta VALUES(?, ?)",
+            ("authority", "NONE_DERIVED_FROM_ACTIVE_EXPLICIT_ADJUDICATION_CHAIN"),
+        )
+        for obj in sorted(subjects, key=lambda item: item["id"]):
+            connection.execute(
+                "INSERT INTO current_subject VALUES(?, ?, ?)",
+                (
+                    obj["id"], obj["object_type"],
+                    json.dumps(obj, sort_keys=True, separators=(",", ":")),
+                ),
+            )
+        for edge in graph_edges:
+            connection.execute(
+                "INSERT INTO graph_edge VALUES(?, ?, ?, ?)",
+                (
+                    edge["proposition_id"], edge["subject_id"],
+                    edge["predicate_code"], edge["object_id"],
+                ),
+            )
+        connection.commit()
+        connection.execute("VACUUM")
+        connection.close()
 
+        view_sha = hashlib.sha256(current_view.read_bytes()).hexdigest()
+        index_sha = hashlib.sha256(database.read_bytes()).hexdigest()
+        # These two replacements are NOT a fully atomic multi-file commit.
+        # Consumers requiring that property need a versioned bundle pointer.
+        os.replace(database, outdir / "semantic_index.sqlite")
+        os.replace(current_view, outdir / "current_view.json")
     return {
-        "current_view_sha256": hashlib.sha256(current_view.read_bytes()).hexdigest(),
-        "semantic_index_sha256": hashlib.sha256(database.read_bytes()).hexdigest(),
+        "current_view_sha256": view_sha,
+        "semantic_index_sha256": index_sha,
     }
-
 
 def main() -> int:
     parser = argparse.ArgumentParser()
