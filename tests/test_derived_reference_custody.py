@@ -45,11 +45,17 @@ class DirectBuilderReferenceCustodyTests(unittest.TestCase):
             vocab=root/"vocabulary"/"relation_types_v0.1.json"
             vocab.parent.mkdir(parents=True)
             vocab.write_text(json.dumps({"relation_types":[
-                {"id":RTYPE,"object_type":"relation_type","code":"REL_TEST","description":"test"}]}))
+                {"schema_version":"0.1","id":RTYPE,"object_type":"relation_type",
+                 "code":"REL_TEST","description":"Synthetic test relationship",
+                 "family":"LIFECYCLE_LINEAGE","symmetry":"ASYMMETRIC",
+                 "transitivity":"UNKNOWN","current_canon_eligible":True}]}))
             put(root,"adjudications","one.json",adjudication(RTYPE))
             builder.build(root,root/"out")
-            with sqlite3.connect(root/"out"/"semantic_index.sqlite") as db:
+            db=sqlite3.connect(root/"out"/"semantic_index.sqlite")
+            try:
                 indexed=db.execute("SELECT id,object_type FROM current_subject").fetchall()
+            finally:
+                db.close()
             self.assertEqual(indexed,[(RTYPE,"relation_type")])
 
     def test_regular_node_subject_still_builds(self):
