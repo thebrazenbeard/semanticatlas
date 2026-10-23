@@ -142,6 +142,14 @@ def main() -> int:
             require_ref(obj["id"], projection_id, "evidence_projection")
         for older_id in obj["supersedes_adjudication_ids"]:
             require_ref(obj["id"], older_id, "adjudication")
+            predecessor = objects.get(older_id, (None, None))[1]
+            if (predecessor is not None
+                    and predecessor.get("object_type") == "adjudication"
+                    and predecessor.get("subject_id") != obj["subject_id"]):
+                errors.append(
+                    f"{obj['id']}: cross-subject adjudication supersession "
+                    f"{older_id} affects {predecessor.get('subject_id')}"
+                )
 
     adjudications = {obj["id"]: obj for obj in by_type["adjudication"]}
 
