@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import deque
 import hashlib
 import json
 import os
@@ -49,19 +50,60 @@ def active_adjudications(objects):
     # An adjudication's supersession chain must stay within its subject.
     # Cross-subject lineage belongs in explicit semantic propositions, not
     # an unrelated decision's authority-revocation chain.
-    for adjudication in adjudications.values():
-        for older_id in adjudication.get("supersedes_adjudication_ids", []):
+    successors = {object_id: [] for object_id in adjudications}
+    pending_predecessors = {}
+    for adjudication_id, adjudication in adjudications.items():
+        predecessors = adjudication.get("supersedes_adjudication_ids", [])
+        if len(predecessors) != len(set(predecessors)):
+            raise ValueError(f"duplicate adjudication supersession in {adjudication_id}")
+        pending_predecessors[adjudication_id] = len(predecessors)
+        for older_id in predecessors:
             older = adjudications.get(older_id)
-            if older is not None and older.get("subject_id") != adjudication.get("subject_id"):
+            if older is None:
+                raise ValueError(
+                    f"unresolved adjudication supersession {adjudication_id} -> {older_id}"
+                )
+            if older.get("subject_id") != adjudication.get("subject_id"):
                 raise ValueError(
                     f"cross-subject adjudication supersession {adjudication['id']} -> {older_id}"
                 )
+            successors[older_id].append(adjudication_id)
+
+    # The validator checks these invariants, but this builder is also a direct
+    # CLI/public function. Invalid chains must not silently erase or multiply
+    # the derived CURRENT_CANON state when callers skip validation.
+    ready = deque(sorted(
+        object_id for object_id, count in pending_predecessors.items() if count == 0
+    ))
+    visited_count = 0
+    while ready:
+        older_id = ready.popleft()
+        visited_count += 1
+        for successor_id in sorted(successors[older_id]):
+            pending_predecessors[successor_id] -= 1
+            if pending_predecessors[successor_id] == 0:
+                ready.append(successor_id)
+    if visited_count != len(adjudications):
+        raise ValueError("adjudication supersession cycle")
+
     superseded_ids = {
         older_id
         for adjudication in adjudications.values()
         for older_id in adjudication.get("supersedes_adjudication_ids", [])
     }
     active_ids = set(adjudications) - superseded_ids
+    current_by_subject = {}
+    for adjudication_id in sorted(active_ids):
+        adjudication = adjudications[adjudication_id]
+        if adjudication.get("authority_scope") != "CURRENT_CANON":
+            continue
+        subject_id = adjudication["subject_id"]
+        if subject_id in current_by_subject:
+            raise ValueError(
+                f"multiple active CURRENT_CANON adjudications for {subject_id}: "
+                f"{current_by_subject[subject_id]}, {adjudication_id}"
+            )
+        current_by_subject[subject_id] = adjudication_id
 
     # Lifecycle events are immutable history, but only an event whose causing
     # adjudication is still active affects the current projection. If a later
