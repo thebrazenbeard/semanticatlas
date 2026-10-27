@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 from __future__ import annotations
 
 import argparse
@@ -6,7 +6,9 @@ from collections import deque
 import hashlib
 import json
 import os
+import shutil
 import sqlite3
+import uuid
 import tempfile
 from pathlib import Path
 
@@ -155,6 +157,88 @@ def canonical_json_bytes(value) -> bytes:
     ).encode("utf-8")
 
 
+def load_committed_bundle(outdir: Path):
+    """Read exactly one manifest-bound immutable JSON/SQLite generation.
+
+    Legacy top-level exports are compatibility views and NOT atomic together.
+    Callers requiring coherence must consume this manifest-based API.
+    """
+    outdir = Path(outdir)
+    manifest = json.loads((outdir / "current_bundle.json").read_text(encoding="utf-8"))
+    if set(manifest) != {
+        "schema_version", "generation", "current_view_sha256",
+        "semantic_index_sha256",
+    } or manifest["schema_version"] != 1:
+        raise ValueError("invalid committed bundle manifest schema")
+    generation = manifest["generation"]
+    if (type(generation) is not str or len(generation) != 32
+            or any(c not in "0123456789abcdef" for c in generation)):
+        raise ValueError("invalid committed bundle generation")
+    directory = outdir / ".semanticatlas-generations" / generation
+    if directory.is_symlink() or not directory.is_dir():
+        raise ValueError("invalid committed generation directory")
+    payloads = {}
+    for name, key in (
+        ("current_view.json", "current_view_sha256"),
+        ("semantic_index.sqlite", "semantic_index_sha256"),
+    ):
+        path = directory / name
+        expected = manifest[key]
+        if (type(expected) is not str or len(expected) != 64
+                or any(c not in "0123456789abcdef" for c in expected)):
+            raise ValueError("invalid committed bundle digest")
+        if path.is_symlink() or not path.is_file():
+            raise ValueError("committed generation artifact is not a regular file")
+        data = path.read_bytes()
+        if hashlib.sha256(data).hexdigest() != expected:
+            raise ValueError(f"committed generation digest mismatch: {name}")
+        payloads[name] = path
+    return {
+        "generation": generation,
+        "view": json.loads(payloads["current_view.json"].read_text(encoding="utf-8")),
+        "database": payloads["semantic_index.sqlite"],
+        "manifest": manifest,
+    }
+
+
+def _publish_bundle(
+    outdir: Path, database: Path, current_view: Path,
+    index_sha: str, view_sha: str,
+) -> None:
+    """Publish immutable paired artifacts through a single manifest switch.
+
+    Legacy exports remain nontransactional. A concurrently replacing writer
+    may interleave those exports, but never changes the committed generation.
+    This does not attest power-loss-safe directory fsync on every platform.
+    """
+    parent = outdir / ".semanticatlas-generations"
+    parent.mkdir(exist_ok=True)
+    generation = uuid.uuid4().hex
+    destination = parent / generation
+    destination.mkdir()
+    for item in (database, current_view):
+        published = destination / item.name
+        shutil.copyfile(item, published)
+        with published.open("rb+") as stream:
+            os.fsync(stream.fileno())
+    manifest = {
+        "schema_version": 1,
+        "generation": generation,
+        "current_view_sha256": view_sha,
+        "semantic_index_sha256": index_sha,
+    }
+    pending = outdir / (".current_bundle." + generation + ".json")
+    with pending.open("wb") as stream:
+        stream.write(canonical_json_bytes(manifest))
+        stream.flush()
+        os.fsync(stream.fileno())
+    # Preserve compatible top-level exports, whose two replacements are NOT
+    # a transaction. Readers must resolve current_bundle.json just once.
+    os.replace(database, outdir / "semantic_index.sqlite")
+    os.replace(current_view, outdir / "current_view.json")
+    os.replace(pending, outdir / "current_bundle.json")
+
+
 def build(root: Path, outdir: Path):
     objects = load_objects(root)
     active = active_adjudications(objects)
@@ -244,10 +328,7 @@ def build(root: Path, outdir: Path):
 
         view_sha = hashlib.sha256(current_view.read_bytes()).hexdigest()
         index_sha = hashlib.sha256(database.read_bytes()).hexdigest()
-        # These two replacements are NOT a fully atomic multi-file commit.
-        # Consumers requiring that property need a versioned bundle pointer.
-        os.replace(database, outdir / "semantic_index.sqlite")
-        os.replace(current_view, outdir / "current_view.json")
+        _publish_bundle(outdir, database, current_view, index_sha, view_sha)
     return {
         "current_view_sha256": view_sha,
         "semantic_index_sha256": index_sha,
@@ -264,3 +345,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
