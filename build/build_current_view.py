@@ -52,9 +52,38 @@ def active_adjudications(objects):
     for adjudication in adjudications.values():
         for older_id in adjudication.get("supersedes_adjudication_ids", []):
             older = adjudications.get(older_id)
+            if older is None:
+                raise ValueError(
+                    f"unresolved adjudication supersession {adjudication['id']} -> {older_id}"
+                )
             if older is not None and older.get("subject_id") != adjudication.get("subject_id"):
                 raise ValueError(
                     f"cross-subject adjudication supersession {adjudication['id']} -> {older_id}"
+                )
+    # The direct builder is callable without validate_atlas.py. Reject cycles
+    # here too: otherwise mutual supersession silently removes all decisions
+    # from the derived current view.
+    visited = set()
+    for start in sorted(adjudications):
+        if start in visited:
+            continue
+        visiting = set()
+        stack = [(start, False)]
+        while stack:
+            identifier, finished = stack.pop()
+            if finished:
+                visiting.remove(identifier)
+                visited.add(identifier)
+            elif identifier not in visited:
+                if identifier in visiting:
+                    raise ValueError(f"adjudication supersession cycle at {identifier}")
+                visiting.add(identifier)
+                stack.append((identifier, True))
+                stack.extend(
+                    (predecessor, False)
+                    for predecessor in reversed(
+                        adjudications[identifier].get("supersedes_adjudication_ids", [])
+                    )
                 )
     superseded_ids = {
         older_id
@@ -62,6 +91,17 @@ def active_adjudications(objects):
         for older_id in adjudication.get("supersedes_adjudication_ids", [])
     }
     active_ids = set(adjudications) - superseded_ids
+    active_current_subjects = {}
+    for identifier in sorted(active_ids):
+        adjudication = adjudications[identifier]
+        if adjudication.get("authority_scope") == "CURRENT_CANON":
+            subject = adjudication["subject_id"]
+            if subject in active_current_subjects:
+                raise ValueError(
+                    f"multiple active CURRENT_CANON adjudications for {subject}: "
+                    f"{active_current_subjects[subject]} and {identifier}"
+                )
+            active_current_subjects[subject] = identifier
 
     # Lifecycle events are immutable history, but only an event whose causing
     # adjudication is still active affects the current projection. If a later
