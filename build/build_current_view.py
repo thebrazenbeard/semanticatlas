@@ -92,6 +92,27 @@ def active_adjudications(objects):
         for older_id in adjudication.get("supersedes_adjudication_ids", [])
     }
     active_ids = set(adjudications) - superseded_ids
+
+    # This public direct builder is also callable without validate_atlas.py.
+    # Enforce lifecycle reference and subject integrity before applying any
+    # terminal effect: unrelated or missing causes must not revoke canon.
+    for event in objects.values():
+        if event.get("object_type") != "lifecycle_event":
+            continue
+        cause_id = event.get("caused_by_adjudication_id")
+        cause = adjudications.get(cause_id)
+        if cause is None:
+            raise ValueError(f"unresolved lifecycle cause {event.get('id')} -> {cause_id}")
+        if cause.get("subject_id") != event.get("subject_id"):
+            raise ValueError(
+                f"cross-subject lifecycle cause {event.get('id')} -> {cause_id}"
+            )
+        successor_id = event.get("successor_id")
+        if successor_id is not None and successor_id not in objects:
+            raise ValueError(
+                f"unresolved lifecycle successor {event.get('id')} -> {successor_id}"
+            )
+
     current_by_subject = {}
     for adjudication_id in sorted(active_ids):
         adjudication = adjudications[adjudication_id]
