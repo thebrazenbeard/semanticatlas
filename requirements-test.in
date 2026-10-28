@@ -1,0 +1,3 @@
+# The only direct non-stdlib dependency needed by canonical validation and tests.
+# Resolve and hash its complete dependency graph with pip-compile.
+jsonschema==4.25.1
