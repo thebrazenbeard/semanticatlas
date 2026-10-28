@@ -25,6 +25,27 @@ Keep separate:
 
 Semantic similarity does not merge provenance, authority, identity, or historical state.
 
+## Reproducing validation locally
+
+Python 3.12 is the tested runtime. The validation suite uses `jsonschema` and its
+transitive dependencies from the exact-version, SHA-256-hashed
+`requirements-test.txt` lockfile. For a fresh checkout on Linux or macOS:
+
+```sh
+python3.12 -m venv .venv
+.venv/bin/python -m pip install --require-hashes -r requirements-test.txt
+.venv/bin/python build/validate_atlas.py --root .
+.venv/bin/python build/validate_ids.py --root .
+.venv/bin/python -m unittest discover -s tests -q
+```
+
+On Windows, use `.venv\\Scripts\\python.exe` in place of `.venv/bin/python`.
+The CI workflow uses this same lockfile and Python minor version. To update
+the dependency graph deliberately, edit `requirements-test.in`, run
+`pip-compile --generate-hashes -o requirements-test.txt requirements-test.in`
+with Python 3.12, then rerun the validation suite. This updates test tooling
+only; it does not promote or rewrite historical Semantic Atlas material.
+
 ## Research work
 
 Historical reconstruction and source archaeology belong on research branches until a current Semantic Atlas architecture has earned promotion.
