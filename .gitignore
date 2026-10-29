@@ -3,3 +3,11 @@ __pycache__/
 *.py[cod]
 .venv/
 .pytest_cache/
+
+# New local ChatGPT export artifacts and private indexing outputs must not be
+# added to this public repository. These do not untrack historical files.
+**/chatgpt-history-*
+**/chatgpt-current-*
+**/chatgpt-export-*/
+**/ChatGPT-export*.zip
+**/chat_history_private*/
