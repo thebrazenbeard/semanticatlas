@@ -23,6 +23,12 @@ JUDGMENT_FIELDS = (
 
 
 def canonical_source_id(legacy_id: str) -> str:
+    # Source identity is exact provenance, not a display value. Stringifying
+    # JSON numbers, booleans, objects, or null can alias a different source's
+    # literal text ID and silently merge their canonical identities.
+    if (type(legacy_id) is not str or not legacy_id.strip()
+            or not legacy_id.isprintable()):
+        raise ValueError("source_id must be nonblank printable exact text")
     return f"SRCI-{uuid.uuid5(MIGRATION_NAMESPACE, legacy_id)}"
 
 
@@ -31,11 +37,12 @@ def split_record(record: dict) -> tuple[dict, dict]:
     if missing:
         raise ValueError(f"source record missing neutral fields: {missing}")
 
-    legacy_id = str(record["source_id"])
+    legacy_id = record["source_id"]
+    canonical_id = canonical_source_id(legacy_id)
     neutral = {
         "schema_version": "0.1",
         "object_type": "source_instance",
-        "id": canonical_source_id(legacy_id),
+        "id": canonical_id,
         "legacy_source_id": legacy_id,
         "title": record["title"],
         "source_class": record["source_class"],
