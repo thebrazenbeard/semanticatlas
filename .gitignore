@@ -3,5 +3,3 @@ __pycache__/
 *.py[cod]
 .venv/
 .pytest_cache/
-config.bat
-node_modules
