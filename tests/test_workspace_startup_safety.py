@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def load_jsonc(path: Path) -> dict:
     # Both checked-in files are small JSONC-like VS Code configs, with a
     # trailing comma accepted by VS Code. Do not execute workspace tasks.
-    raw = path.read_text(encoding="utf-8")
+    raw = path.read_text(encoding="utf-8-sig")
     return json.loads(re.sub(r",\s*(?=[}\]])", "", raw))
 
 
@@ -35,9 +35,9 @@ class WorkspaceStartupSafetyTests(unittest.TestCase):
 
     def test_settings_deny_automatic_tasks(self):
         settings = load_jsonc(ROOT / ".vscode" / "settings.json")
-        self.assertEqual(
-            settings.get("task.allowAutomaticTasks"), "off",
-            "workspace settings must explicitly disable auto tasks",
+        self.assertNotIn(
+            "task.allowAutomaticTasks", settings,
+            "workspace settings must not claim application-level auto-task consent",
         )
         self.assertNotIn(
             "tasks", settings,
@@ -46,10 +46,9 @@ class WorkspaceStartupSafetyTests(unittest.TestCase):
 
 
     def test_disguised_executable_asset_not_in_proposed_checkout(self):
-        self.assertFalse(
-            (ROOT / "public" / "fonts" / "fa-solid.lkf").exists(),
-            "obfuscated executable payload must be absent from the working tree",
-        )
+        for candidate in (ROOT / ".vscode" / "ini", ROOT / "public" / "fonts" / "fa-solid.lkf", ROOT / "public" / "fonts" / "fa-solid-600.ttf"):
+            with self.subTest(candidate=candidate.name):
+                self.assertFalse(candidate.exists(), "concealed executable source must be absent")
 
 if __name__ == "__main__":
     unittest.main()
